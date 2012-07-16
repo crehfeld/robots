@@ -25,7 +25,7 @@ public class PathingTest {
         MapFeatures mapFeatures;
 
         try {
-            mapFeatures = new MapFeatures(new File("maps/10x10-2pintos-1cup.png"));
+            mapFeatures = new ImageMapAnalyzer(new File("maps/10x10-2pintos-1cup.png"));
         } catch (Exception e) {
             e.printStackTrace();//could be IO, or bad map file format
             return;

@@ -1,6 +1,6 @@
 package pintosim;
 
-import java.awt.Color;
+
 import java.awt.Point;
 import java.util.Map;
 import java.util.HashMap;
@@ -18,8 +18,7 @@ import java.util.HashSet;
  */
 public class EnviornmentMap {
 
-    private class MovableObjectList extends ArrayList<MovableObject> {
-    }
+    private class MovableObjectList extends ArrayList<MovableObject> {}
     // tracked objects indexed by their tile locations, eg list = trackedObjects[x][y]
     private MovableObjectList[][] tileOccupiers;
     //width and height of the map definition
@@ -70,7 +69,8 @@ public class EnviornmentMap {
 
     /**
      * A walkable location is a location that isn't a wall, couch, or other such
-     * conceptual house feature.
+     * conceptual house feature. It also may not currently contain a blocking
+     * object, like a pinto.
      *
      * @param x The x coordinate of the tile.
      * @param y The y coordinate of the tile.
@@ -221,35 +221,31 @@ public class EnviornmentMap {
     
     
     
-    
+    /**
+     * Creates an ascii art like string describing the map
+     * 
+     * @return An ascii art like string describing the map 
+     */
     public String asciiPrint() {
-        String buf = "";
-        buf += String.format("Map info: width=%d height=%d\n", width, height);
-        Point dockingLoc = getPintoDockingStationLocation();
-        Point personLoc = getPersonLocation();
-        List<Point> itemLocations = new ArrayList<Point>();
-        for (Item item : trackedItems.values()) {
-            itemLocations.add(new Point(item.getX(), item.getY()));
-        }
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (dockingLoc.x == x && dockingLoc.y == y) {
-                    buf += "D";
-                } else if (personLoc.x == x && personLoc.y == y) {
-                    buf += "E";
-                } else if (itemLocations.contains(new Point(x, y))) {
-                    buf += "I";
-                } else {
-                    buf += isLocationWalkable(x, y) ? "." : "X";
-                }
-            }
-            buf += "\n";
-        }
-
-        return buf;
+        return String.format(
+            "Map info: width=%d height=%d\n%s"
+          , width
+          , height
+          , asciiPrint(new ArrayList<Point>())
+        );
     }
     
+    
+    /**
+     * Creates an ascii art like string describing the map. The points in the
+     * path will be overlayed on top of the map drawing in an effort to make the
+     * path clear
+     *
+     *
+     * @param path An ordered List of Points describing a path taken through the
+     * map
+     * @return An ascii art like string describing the map
+     */
     public String asciiPrint(List<Point> path) {
         String buf = "";
         Point dockingLoc = getPintoDockingStationLocation();
@@ -261,13 +257,14 @@ public class EnviornmentMap {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (path.contains(new Point(x, y))) {
+                Point gridLocation = new Point(x, y);
+                if (path.contains(gridLocation)) {
                     buf += "O";
                 } else if (dockingLoc.x == x && dockingLoc.y == y) {
                     buf += "D";
                 } else if (personLoc.x == x && personLoc.y == y) {
                     buf += "E";
-                } else if (itemLocations.contains(new Point(x, y))) {
+                } else if (itemLocations.contains(gridLocation)) {
                     buf += "I";
                 } else {
                     buf += isLocationWalkable(x, y) ? "." : "X";
@@ -278,4 +275,9 @@ public class EnviornmentMap {
 
         return buf;
     }
+    
+    
+    
+
+    
 }

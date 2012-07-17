@@ -28,8 +28,8 @@ public class PintoManager {
         _uniquePintoId = 1;
         _maxAvailablePintos = 5;
         _availablePintos = _maxAvailablePintos;
-        _pintos = new ArrayList<>();
-        _taskStatusMap = new ConcurrentHashMap<>();
+        _pintos = new ArrayList<Pinto>();
+        _taskStatusMap = new ConcurrentHashMap<String, TaskStatus>();
         _map = map;
     }
 

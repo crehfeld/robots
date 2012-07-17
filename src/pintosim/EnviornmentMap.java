@@ -14,7 +14,7 @@ import java.util.HashSet;
  * features of the house(as specified by MapFeatures). It also knows the current
  * locations of all objects that it tracks.
  *
- * @author chris
+ * @author Chris
  */
 public class EnviornmentMap {
 

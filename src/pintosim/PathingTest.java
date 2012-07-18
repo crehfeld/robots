@@ -43,7 +43,7 @@ public class PathingTest {
         
         
         EnviornmentMap map = new EnviornmentMap(mapFeatures);
-        PathFinder pf = new PathFinder(map);
+        DijkstraPathFinder pf = new DijkstraPathFinder(map);
         pf.computePathsFrom(from);
         List<Point> path = pf.getShortestPathTo(to);
         

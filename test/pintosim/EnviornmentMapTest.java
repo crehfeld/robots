@@ -181,7 +181,7 @@ public class EnviornmentMapTest {
     @Test
     public void testAddPathFinderListener() {
         System.out.println("addPathFinderListener");
-        PathFinder pathFinder = null;
+        DijkstraPathFinder pathFinder = null;
         EnviornmentMap instance = null;
         instance.addPathFinderListener(pathFinder);
         // TODO review the generated test code and remove the default call to fail.

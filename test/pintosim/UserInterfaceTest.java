@@ -46,7 +46,7 @@ public class UserInterfaceTest {
             e.printStackTrace();
         }
         EnviornmentMap map = new EnviornmentMap(mf);
-        PathFinder pathFinder = new PathFinder(map);
+        DijkstraPathFinder pathFinder = new DijkstraPathFinder(map);
 
         PintoManager pintoManager = new PintoManager(map);
 

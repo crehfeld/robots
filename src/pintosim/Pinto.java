@@ -58,7 +58,7 @@ public class Pinto extends MovableObject {
             throw new NullPointerException(e);
         }
 
-        PathFinder dsToItemPathFinder = new PathFinder(_map);
+        DijkstraPathFinder dsToItemPathFinder = new DijkstraPathFinder(_map);
         dsToItemPathFinder.computePathsFrom(ds);
         List<Point> path = dsToItemPathFinder.getShortestPathTo(item);
         try {
@@ -70,7 +70,7 @@ public class Pinto extends MovableObject {
         }
         //System.out.print(dsToItemPathFinder.printPath(path));
 
-        PathFinder itemToElderlyPathFinder = new PathFinder(_map);
+        DijkstraPathFinder itemToElderlyPathFinder = new DijkstraPathFinder(_map);
         itemToElderlyPathFinder.computePathsFrom(item);
         path = itemToElderlyPathFinder.getShortestPathTo(elderly);
         try {
@@ -81,7 +81,7 @@ public class Pinto extends MovableObject {
         }
         //System.out.print(itemToElderlyPathFinder.printPath(path));
 
-        PathFinder elderlyToDsPathFinder = new PathFinder(_map);
+        DijkstraPathFinder elderlyToDsPathFinder = new DijkstraPathFinder(_map);
         elderlyToDsPathFinder.computePathsFrom(elderly);
         path = elderlyToDsPathFinder.getShortestPathTo(ds);
         try {
@@ -105,7 +105,7 @@ public class Pinto extends MovableObject {
 
     public void cancelItem(Command cmd) {
         command.onCancel(_myCurrentLocation);
-        PathFinder itemToDsPathFinder = new PathFinder(_map);
+        DijkstraPathFinder itemToDsPathFinder = new DijkstraPathFinder(_map);
         Point ds = _map.getPintoDockingStationLocation();
         Point item = _myCurrentLocation;
         try {

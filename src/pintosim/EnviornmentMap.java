@@ -25,7 +25,7 @@ public class EnviornmentMap {
     private int width = 0;
     private int height = 0;
     private MapFeatures mapFeatures;
-    private List<PathFinder> pathFinders = new ArrayList<PathFinder>();
+    private List<DijkstraPathFinder> pathFinders = new ArrayList<DijkstraPathFinder>();
     /**
      * All tracked objects. We store this separate location because when
      * something moves, it updates its own internal location and then notifies
@@ -153,7 +153,7 @@ public class EnviornmentMap {
     }
 
     // we will then broadcast location changed update messages to it
-    public void addPathFinderListener(PathFinder pathFinder) {
+    public void addPathFinderListener(DijkstraPathFinder pathFinder) {
         pathFinders.add(pathFinder);
     }
 
@@ -209,7 +209,7 @@ public class EnviornmentMap {
 
         boolean oldLocationUnoccupied = tileOccupiers[oldX][oldY].size() == 0;
 
-        for (PathFinder p : pathFinders) {
+        for (DijkstraPathFinder p : pathFinders) {
             p.spaceOccupied(newX, newY);
             if (oldLocationUnoccupied) {
                 p.spaceUnoccupied(oldX, oldY);

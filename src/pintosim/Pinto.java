@@ -57,10 +57,11 @@ public class Pinto extends MovableObject {
             String e = "No Pinto out fetching " + _itemName.toLowerCase();
             throw new NullPointerException(e);
         }
+        
+        List<Point> path = null;
 
-        DijkstraPathFinder dsToItemPathFinder = new DijkstraPathFinder(_map);
-        dsToItemPathFinder.computePathsFrom(ds);
-        List<Point> path = dsToItemPathFinder.getShortestPathTo(item);
+
+        path = path = new DijkstraPathFinder(_map).getPath(ds, item);
         try {
             _path = new ArrayList<Point>();
             _path.addAll(path);
@@ -68,22 +69,10 @@ public class Pinto extends MovableObject {
             e.printStackTrace();
             return;
         }
-        //System.out.print(dsToItemPathFinder.printPath(path));
 
-        DijkstraPathFinder itemToElderlyPathFinder = new DijkstraPathFinder(_map);
-        itemToElderlyPathFinder.computePathsFrom(item);
-        path = itemToElderlyPathFinder.getShortestPathTo(elderly);
-        try {
-            _path.addAll(path);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return;
-        }
-        //System.out.print(itemToElderlyPathFinder.printPath(path));
 
-        DijkstraPathFinder elderlyToDsPathFinder = new DijkstraPathFinder(_map);
-        elderlyToDsPathFinder.computePathsFrom(elderly);
-        path = elderlyToDsPathFinder.getShortestPathTo(ds);
+
+        path = new DijkstraPathFinder(_map).getPath(item, ds);
         try {
             _path.addAll(path);
         } catch (NullPointerException e) {
@@ -91,8 +80,14 @@ public class Pinto extends MovableObject {
             return;
         }
 
-        //System.out.print(elderlyToDsPathFinder.printPath(path));
-        // _pathFinder.printMap();
+        path = path = new DijkstraPathFinder(_map).getPath(elderly, ds);
+        try {
+            _path.addAll(path);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return;
+        }
+
         Iterator<Point> it = _path.listIterator();
         while (it.hasNext()) {
             _myCurrentLocation = it.next();

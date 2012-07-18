@@ -17,6 +17,8 @@ public class DijkstraPathFinder {
     
     private boolean[][] freeSpaces;//true means unobstructed
     
+    private boolean sourcePathComputed = false;
+    
     public DijkstraPathFinder(EnviornmentMap environmentMap) {
         this.environmentMap = environmentMap;
         populate();
@@ -129,7 +131,13 @@ public class DijkstraPathFinder {
         }
     }
     
+   
     public void computePathsFrom(Point from) {
+        
+        if (sourcePathComputed) throw new IllegalStateException("this is buggy if you call computepathsfrom twice on the same object");
+        sourcePathComputed = true;
+        
+        
         Vertex source = vertices[from.x][from.y];
         source.minDistance = 0.;
         PriorityQueue<Vertex> vertexQueue = new PriorityQueue<Vertex>();
@@ -152,6 +160,13 @@ public class DijkstraPathFinder {
             }
         }
     }
+    
+    
+    public List<Point> getPath(Point from, Point to) {
+        computePathsFrom(from);
+        return getShortestPathTo(to);
+    }
+    
     
     
 

@@ -3,6 +3,7 @@ package pintosim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 /**
  * Provides a graphical front end to PintoSim.
@@ -123,27 +124,16 @@ public class GUI implements ActionListener, ItemListener {
 
     // Manages actions on a object
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equalsIgnoreCase("Note a location")) {
-
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Retrieve an item")) {
-
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Check Status")) {
-
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Cancel")) {
-
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("About PintoSim")) {
+        if (e.getActionCommand().equalsIgnoreCase("About PintoSim")) {
             JOptionPane.showMessageDialog(frame,
-                    "Designed by PlzSendTheCodes teams",
+                    "Designed by PlzSendTheCodes team",
                     "About PintoSim",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+        // wip...
     }
 
-    //
+    // if the user selects or deselects an item
     public void itemStateChanged(ItemEvent e) {
 
     }

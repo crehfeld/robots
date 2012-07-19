@@ -80,9 +80,9 @@ public class PintoSim {
             input = scanner.nextLine();
         }
     }
-    
-    
-    
+
+
+
 
     /*
      * Initializes the system, wiring up the object dependencies.

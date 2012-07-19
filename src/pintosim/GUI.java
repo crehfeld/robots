@@ -1,9 +1,7 @@
 package pintosim;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.*;
-import java.io.File;
 
 /**
  * Provides a graphical front end to PintoSim.
@@ -12,17 +10,18 @@ import java.io.File;
  */
 public class GUI implements ActionListener, ItemListener {
 
+    public static void main(String[] args) {
+        new GUI();
+    }
+
     /**
      * Constructs a GUI object.
-     * @param interpreter parses a command
-     * @param map the map of the environment
-     * @param pintoManager manages Pintos
      */
-    public GUI(CommandParser interpreter, EnviornmentMap map, PintoManager pintoManager) {
+    public GUI() {
 
-        this.interpreter = interpreter;
+        /*this.interpreter = interpreter;
         this.map = map;
-        this.pintoManager = pintoManager;
+        this.pintoManager = pintoManager;*/
 
         frame.setJMenuBar(menu);
         menu.add(fileMenu);
@@ -30,11 +29,13 @@ public class GUI implements ActionListener, ItemListener {
         menu.add(helpMenu);
         menu.add(aboutMenu);
 
-        // File menu
-        JMenuItem note = new JMenuItem("Note a location");
-        JMenuItem retrieve = new JMenuItem("Retrieve an item");
-        fileMenu.add(note);
-        fileMenu.add(retrieve);
+        //Buttons
+        JButton location = new JButton("Note a Location");
+        location.setBounds(0, 0, 30, 15);
+        JButton retrieve = new JButton("Retrieve an item");
+        retrieve.setLocation(20,0);
+        frame.add(location);
+        //frame.add(retrieve);
 
         // Edit menu
         JMenuItem chooseMap = new JMenuItem("Load Map");
@@ -57,16 +58,17 @@ public class GUI implements ActionListener, ItemListener {
         frame.setVisible(true);
     }
 
+    // Manages actions on a object
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equalsIgnoreCase("About PintoSim")) {
             JOptionPane.showMessageDialog(frame,
-                    "(c) PlzSendTheCodes team\n" +
-                            "\t\t\t\t\t\t\t\t 2012",
+                    "Designed by PlzSendTheCodes team\n",
                     "About PintoSim",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
+    //
     public void itemStateChanged(ItemEvent e) {
 
     }

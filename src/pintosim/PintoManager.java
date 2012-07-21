@@ -22,6 +22,9 @@ public class PintoManager {
     private EnviornmentMap _map;
     private Map<String, TaskStatus> _taskStatusMap;
     private Map<String, Command> itemNameCommandMap = new HashMap<String, Command>();
+    
+    
+    private List<Pinto> pintos = new ArrayList<Pinto>();
 
     // member functions
     public PintoManager(EnviornmentMap map) {
@@ -32,23 +35,54 @@ public class PintoManager {
         _taskStatusMap = new ConcurrentHashMap<String, TaskStatus>();
         _map = map;
     }
-
-    public void setMaxAvailablePintos(int maxAvailablePintos) {
-        _maxAvailablePintos = maxAvailablePintos;
-        _availablePintos = maxAvailablePintos;
+    
+    public void addPinto(Pinto pinto) {
+        //pintos.add(pinto);
+        _pintos.add(pinto);
     }
-
-    public void updateAvailablePintos() {
-        if (!_pintos.isEmpty()) {
-            Iterator<Pinto> it = _pintos.iterator();
-            while (it.hasNext()) {
-                Pinto pinto = it.next();
-                if (pinto.getStatus() == PINTO_STATUS.IDLE) {
-                    _availablePintos++;
-                }
+    
+    public void work() {
+        doWork();
+        for (Pinto pinto : _pintos) {
+            if (!pinto.isIdle()) {
+                pinto.moveALittleBit();
             }
         }
     }
+    
+    private Pinto getIdlePinto() {
+        for (Pinto pinto : _pintos) {
+            if (pinto.isIdle()) {
+                return pinto;
+            }
+        }
+        
+        return null;
+    }
+    
+    private void assignTasksToIdlePintos() {
+        Pinto idlePinto = getIdlePinto();
+        
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
 
     public void doWork() {
         Iterator it = _taskStatusMap.entrySet().iterator();
@@ -84,36 +118,10 @@ public class PintoManager {
         return (pinto);
     }
 
-    public Pinto getIdlePinto() {
-        if (_availablePintos == 0) {
-            return null;
-        }
-        Pinto pinto = null;
-        if (_uniquePintoId <= _maxAvailablePintos) {
-            // Unused Pintos Are Available
-            pinto = new Pinto(_uniquePintoId, _map, this);
-            _uniquePintoId++;
-            _availablePintos--;
-            _pintos.add(pinto);
-        } else {
-            // All Pinto have been put to work, get first IDLE pinto
-            if (!_pintos.isEmpty()) {
-                Iterator<Pinto> it = _pintos.iterator();
-                while (it.hasNext()) {
-                    pinto = it.next();
-                    if (pinto.getStatus() == PINTO_STATUS.IDLE) {
-                        pinto.setStatus(PINTO_STATUS.BUSY);
-                        break;
-                    }
-                }
-                _availablePintos--;
-            }
-        }
-        return pinto;
-    }
+
 
     public boolean canImmediatelyFulfillATask() {
-        return _availablePintos > 0;
+        return getIdlePinto() != null;
     }
 
     public boolean taskExistsFor(Item item) {
@@ -135,7 +143,7 @@ public class PintoManager {
         }
         switch (status) {
             case COMPLETE:
-                updateAvailablePintos();
+                //updateAvailablePintos();
                 _taskStatusMap.remove(itemName);
                 break;
             default:
@@ -168,7 +176,6 @@ public class PintoManager {
                             throw new NullPointerException(e);
                         }
                         String msg = "Pinto "
-                                + pinto.getName()
                                 + "is already out fetching item "
                                 + itemName;
 
@@ -199,7 +206,7 @@ public class PintoManager {
                             String e = "No Pinto out fetching " + itemName.toLowerCase();
                             throw new NullPointerException(e);
                         }
-                        pinto.cancelItem(cmd);
+                        pinto.abortItemRetrieval();
                         setTaskStatus(itemName, TaskStatus.COMPLETE);
                         break;
                     default:

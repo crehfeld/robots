@@ -1,16 +1,15 @@
 package pintosim;
 
-public class Person extends Item {
+import java.awt.Point;
+
+public class Person extends MovableObject {
     
-    public Person(String name, int x, int y) {
-        super(name, x, y);
+    public Person(Point loc) {
+        super(loc);
     }
     
-    public int getXCoOrdinate() {
-        return super.getX();
+    public Person(int x, int y) {
+        super(x, y);
     }
-    
-    public int getYCoOrdinate() {
-        return super.getY();
-    }
+
 }

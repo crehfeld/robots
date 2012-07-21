@@ -2,12 +2,10 @@ package pintosim;
 
 
 import java.awt.Point;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Map;
 
 /**
  * This class provides location services. It knows the physical dimensions and
@@ -16,7 +14,7 @@ import java.util.HashSet;
  *
  * @author Chris
  */
-public class EnviornmentMap {
+public class EnviornmentMap implements LocationChangeListener {
 
     private class MovableObjectList extends ArrayList<MovableObject> {}
     // tracked objects indexed by their tile locations, eg list = trackedObjects[x][y]
@@ -63,7 +61,7 @@ public class EnviornmentMap {
      *
      * @return A list of MovableObjects
      */
-    public List<MovableObject> getObjectsAt(int x, int y) {
+    public synchronized List<MovableObject> getObjectsAt(int x, int y) {
         return new ArrayList<MovableObject>(tileOccupiers[x][y]);
     }
 
@@ -76,8 +74,14 @@ public class EnviornmentMap {
      * @param y The y coordinate of the tile.
      * @return true if the location is walkable
      */
-    public boolean isLocationWalkable(int x, int y) {
-        return tileOccupiers[x][y].size() == 0 && mapFeatures.isLocationFreeSpace(x, y);
+    public synchronized boolean isLocationWalkable(int x, int y) {
+        return tileOccupiers[x][y].size() == 0
+            && mapFeatures.isLocationFreeSpace(x, y)
+            && !mapFeatures.getPintoDockingStationLocation().equals(new Point(x, y));
+    }
+    
+    public synchronized boolean isLocationWalkable(Point loc) {
+        return isLocationWalkable(loc.x, loc.y);
     }
 
     /**
@@ -104,41 +108,32 @@ public class EnviornmentMap {
     }
 
     public Point getPintoDockingStationLocation() {
-        return this.mapFeatures.getPintoDockingStationLocation();
+        return mapFeatures.getPintoDockingStationLocation();
     }
 
     public Point getPersonLocation() {
-        return this.mapFeatures.getPersonLocation();
+        return mapFeatures.getPersonLocation();
     }
 
     public Point getItemLocation(String itemName) {
         Item item = getItemByName(itemName);
         return new Point(item.getX(), item.getY());
     }
-    
-    public void print() {
-        System.out.print(this.mapFeatures);
-    }
+
     public void trackObject(MovableObject obj) {
         if (!trackedObjects.containsKey(obj)) {
             trackedObjects.put(obj, new Point(obj.getX(), obj.getY()));
+            obj.addLocationChangeListeners(this);
         }
-        
     }
 
-    public boolean trackItem(Item item) {
+    public void trackItem(Item item) {
         String name = item.getName().toLowerCase();
         if (!trackedItems.containsKey(name)) {
             trackedItems.put(name, item);
-            return true;
+            item.addLocationChangeListeners(this);
         }
-        return false;
     }
-    
-    public void stopTrackingItem(Item item) {
-        trackedItems.remove(item.getName().toLowerCase());
-    }
-    
 
     public Item getItemByName(String name) {
         return trackedItems.get(name.toLowerCase());
@@ -167,7 +162,7 @@ public class EnviornmentMap {
      *
      * @return a matrix where true means the position is walkable/unobstructed
      */
-    public boolean[][] getWalkabilityMatrix() {
+    public synchronized boolean[][] getWalkabilityMatrix() {
         boolean[][] freeSpaceMatrix = mapFeatures.getFreeSpaceMatrix();
         boolean[][] walkabilityMatrix = new boolean[width][height];
         for (int i = 0; i < width; i++) {
@@ -184,7 +179,7 @@ public class EnviornmentMap {
     // all movable objects should call this method when they move
     // it allows this map to keep up to date on the locations of things.
     // it also notifies all the pathfinders of the change too
-    public void updateLocation(MovableObject obj) {
+    public synchronized void updateLocation(MovableObject obj) {
         int newX = obj.getX();
         int newY = obj.getY();
 
@@ -195,7 +190,9 @@ public class EnviornmentMap {
         Point oldLocation = trackedObjects.get(obj);
 
         if (oldLocation == null) {
-            throw new RuntimeException("trackObject() was never called on this MovableObject ");
+                        return;
+           // throw new RuntimeException("trackObject() was never called on this MovableObject ");
+
         }
 
         int oldX = oldLocation.x;
@@ -246,36 +243,50 @@ public class EnviornmentMap {
      * map
      * @return An ascii art like string describing the map
      */
-    public String asciiPrint(List<Point> path) {
-        String buf = "";
-        Point dockingLoc = getPintoDockingStationLocation();
-        Point personLoc = getPersonLocation();
-        List<Point> itemLocations = new ArrayList<Point>();
-        for (Item item : trackedItems.values()) {
-            itemLocations.add(new Point(item.getX(), item.getY()));
-        }
-
+    public synchronized String asciiPrint(List<Point> path) {
+        char[][] grid = new char[width][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Point gridLocation = new Point(x, y);
-                if (path.contains(gridLocation)) {
-                    buf += "O";
-                } else if (dockingLoc.x == x && dockingLoc.y == y) {
-                    buf += "D";
-                } else if (personLoc.x == x && personLoc.y == y) {
-                    buf += "E";
-                } else if (itemLocations.contains(gridLocation)) {
-                    buf += "I";
-                } else {
-                    buf += isLocationWalkable(x, y) ? "." : "X";
-                }
+                grid[x][y] = isLocationWalkable(x, y) ? '.' : 'X';
+            }
+        }
+        
+        Point dsLoc = mapFeatures.getPintoDockingStationLocation();
+        grid[dsLoc.x][dsLoc.y] = 'D';
+        
+        for (Item item : trackedItems.values()) {
+            grid[item.getX()][item.getY()] = 'I';
+        }
+        
+        for (Map.Entry<MovableObject, Point> entry : trackedObjects.entrySet()) {
+            Point pt = entry.getValue();
+            MovableObject obj = entry.getKey();
+            if (obj instanceof Pinto) {
+                grid[pt.x][pt.y] = 'P';
+            }
+            if (obj instanceof Person) {
+                grid[pt.x][pt.y] = 'E';
+            }
+        }
+        
+        for (Point pt : path) {
+            grid[pt.x][pt.y] = 'O';
+        }
+        
+        
+        
+        
+        
+        String buf = "";
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                buf += grid[x][y];
             }
             buf += "\n";
         }
 
         return buf;
     }
-    
     
     
 

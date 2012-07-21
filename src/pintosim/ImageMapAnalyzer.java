@@ -82,6 +82,10 @@ public class ImageMapAnalyzer implements MapFeatures {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
+                //assume no obstruction by default
+                freeSpaces[x][y] = true;
+                
+                
                 Color pixelColor = new Color(img.getRGB(x, y));
                 Point point = new Point(x, y);
                 

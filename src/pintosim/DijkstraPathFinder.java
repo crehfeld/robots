@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 
-public class DijkstraPathFinder {
+public class DijkstraPathFinder implements PathFinder {
     private int width, height;
     private Vertex[][] vertices;
     private static final int UNOBSTRUCTED_EDGE_WEIGHT  = 5;
@@ -21,7 +21,6 @@ public class DijkstraPathFinder {
     
     public DijkstraPathFinder(EnviornmentMap environmentMap) {
         this.environmentMap = environmentMap;
-        populate();
     }
     
     
@@ -109,7 +108,9 @@ public class DijkstraPathFinder {
    
     /**
      * 
-     * these 2 methods are called by EnviornmentMap when an update occurs
+     * these 2 methods could be called by EnviornmentMap when an update occurs
+     * but we dont current do it because we just do a complete teardown+setup
+     * for each path calculation
      */
     public void spaceUnoccupied(int x, int y) {
         markClearZoneAround(vertices[x][y]);
@@ -134,8 +135,7 @@ public class DijkstraPathFinder {
    
     public void computePathsFrom(Point from) {
         
-        if (sourcePathComputed) throw new IllegalStateException("this is buggy if you call computepathsfrom twice on the same object");
-        sourcePathComputed = true;
+        populate();
         
         
         Vertex source = vertices[from.x][from.y];
@@ -163,6 +163,14 @@ public class DijkstraPathFinder {
     
     
     public List<Point> getPath(Point from, Point to) {
+        if (from.equals(to)) {
+            throw new IllegalArgumentException(String.format(
+                "The from and to location cannot be the same(%d, %d)."
+              , from.x
+              , from.y
+            ));
+        }
+        
         computePathsFrom(from);
         return getShortestPathTo(to);
     }

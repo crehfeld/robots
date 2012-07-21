@@ -179,21 +179,14 @@ public class UserInterface {
             public void onComplete(List<Point> path) {
 
                 display(String.format(
-                    "Here's your %s."
+                    "\nHere's your %s."
                   , cmd.getItemName()
                 ));
-                display("I will show you the map of the house, and then another map with the path that the Pinto took traced on top.");
+                display("I will show you a map with the path that the Pinto took traced on top.");
                 String legend = "Map Legend:";
                 legend += "\nD='Pinto Docking Station'\nE='An Elderly'\nI='An item'\nX='An obstruction(eg, a wall)'\nO='A location in the pintos path'";
                 display(legend);
 
-                // dont stop tracking the item before printing the next map or it wont show up
-                display(String.format(
-                    "%s"
-                  , map.asciiPrint()
-                ));
-                
-                map.stopTrackingItem(item);
                 display(String.format(
                     "%s"
                   , map.asciiPrint(path)
@@ -210,10 +203,6 @@ public class UserInterface {
 
             public void onCancel(Point currentLocation, String itemName) {
                 Item item = map.getItemByName(itemName);
-                map.stopTrackingItem(item);
-                map.trackItem(new Item(cmd.getItemName(),
-                        currentLocation.x,
-                        currentLocation.y));
                 display(String.format(
                         "Item %s dropped at (%d, %d)."
                         + " I can now retrieve it for you from here"

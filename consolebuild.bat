@@ -8,5 +8,11 @@ xcopy maps consolebuild\maps /E
 xcopy src consolebuild\src /E
 xcopy USAGE.txt consolebuild
 javac -d consolebuild src\pintosim\*.java
-cd consolebuild
-java pintosim.PintoSim
+
+
+runwithanimation.bat
+
+
+
+rem cd consolebuild
+rem java pintosim.PintoSim

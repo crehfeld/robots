@@ -1,12 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package pintosim;
 
 public class Item extends MovableObject {
+    private String name;
+    
     public Item(String name, int x, int y) {
-        super(name, x, y);
+        super(x, y);
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
     }
 }

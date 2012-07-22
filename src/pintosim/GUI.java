@@ -169,7 +169,7 @@ public class GUI implements ActionListener, ItemListener {
     }
 
     /**
-     * Draws and updates the map
+     * Draws and updates items on the map
      */
     public void draw() {
 

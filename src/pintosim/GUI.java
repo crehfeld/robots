@@ -48,10 +48,12 @@ public class GUI implements ActionListener, ItemListener {
         location.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Location",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(
+                        frame, "Enter the name of the item: ");
+                if (itemName != null)
+                    JOptionPane.showMessageDialog(frame, "Click on the map where the item is located");
+                else
+                    JOptionPane.showMessageDialog(frame, "Item not noted");
             }
         });
 
@@ -133,8 +135,18 @@ public class GUI implements ActionListener, ItemListener {
         // wip...
     }
 
-    // if the user selects or deselects an item
+    /**
+     * Add support if the user selects or deselects an item.
+     * @param e the event
+     */
     public void itemStateChanged(ItemEvent e) {
+
+    }
+
+    /**
+     * Draws and updates the map
+     */
+    public void draw() {
 
     }
 }

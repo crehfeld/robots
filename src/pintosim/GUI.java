@@ -144,7 +144,7 @@ public class GUI implements ActionListener, ItemListener {
 
         // General frame stuff
         JFrame.setDefaultLookAndFeelDecorated(true);
-        frame.pack();
+        frame.setSize(680, 680);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

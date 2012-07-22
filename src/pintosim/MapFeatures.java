@@ -39,6 +39,15 @@ public interface MapFeatures {
     public Point getPintoDockingStationLocation();
     
     
+    
+    /**
+     * Provides a list of Points which represent initial locations of Items
+     * 
+     * @return A list of Point 
+     */
+    public List<Point> getItemLocations();
+    
+    
     /**
      * Provides a 2d array, in matrix[x][y] format where true values represent a
      * location without obstructions, and false represents an obstruction. Only

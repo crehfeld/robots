@@ -42,11 +42,6 @@ public class PintoSim {
         String input = null;
         System.out.print("Welcome to the 'My Friendly Pintos' assistive Robot system!\n");
         System.out.print("Enter a command, type help, or type quit: ");
-        ui.addInput("system, note the location of a1 at 8,5");
-        ui.addInput("system, note the location of a2 at 8,6");
-        ui.addInput("system, note the location of a3 at 8,4");
-        ui.addInput("system, note the location of prunes at 1,5");
-        ui.addInput("system, get me prunes");
         input = scanner.nextLine();
 
 
@@ -73,11 +68,22 @@ public class PintoSim {
         PintoManager pintoManager = new PintoManager(map);
         PathFinder pathFinder = new DijkstraPathFinder(map);
         
+        //add pintos
         List<Pinto> pintos = new ArrayList<Pinto>();
         for (Point pintoLocation : mapFeatures.getPintoLocations()) {
             Pinto pinto = new Pinto(map, pintoManager, pintoLocation, pathFinder);
             map.trackObject(pinto);
             pintoManager.addPinto(pinto);
+        }
+        
+        //add items, naming them a1, a2, a3....
+        List<Item> items = new ArrayList<Item>();
+        int itemSerial = 1;
+        for (Point itemLocation : mapFeatures.getItemLocations()) {
+            String itemName = "a" + itemSerial++;
+            Item item = new Item(itemName, itemLocation.x, itemLocation.y);
+            map.trackItem(item);
+            System.out.println(item);
         }
         
         map.trackObject(new Person(mapFeatures.getPersonLocation()));

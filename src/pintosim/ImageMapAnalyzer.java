@@ -27,6 +27,8 @@ import java.awt.Color;
  * Red pixels indicate the person. RGB values: (255,0,0)<br>
  *
  * Yellow pixels indicates a pinto. RGB values: (255,255,0)<br>
+ * 
+ * Green pixels indicates an Item. RGB values: (0,255,0)<br>
  *
  * <p> <b>The colors in the image must match the above rgb values exactly, and
  * must be fully opaque(no alpha transparency).</b>
@@ -37,11 +39,13 @@ public class ImageMapAnalyzer implements MapFeatures {
     private Point pintoDockingStation;
     private BufferedImage img;
     private List<Point> pintos = new ArrayList<Point>();
+    private List<Point> items = new ArrayList<Point>();
     private Point person;
     private Point dockingStation;
     private boolean[][] freeSpaces;
     public static final Color PINTO_DOCKING_STATION_COLOR = Color.BLUE;
     public static final Color PINTO_COLOR = Color.YELLOW;
+    public static final Color ITEM_COLOR = Color.GREEN;
     public static final Color PERSON_COLOR = Color.RED;
     public static final Color OBSTRUCTION_COLOR = Color.BLACK;
     public static final Color NO_OBSTRUCTION_COLOR = Color.WHITE;
@@ -100,6 +104,8 @@ public class ImageMapAnalyzer implements MapFeatures {
                     dockingStation = point;
                 } else if (PINTO_COLOR.equals(pixelColor)) {
                     pintos.add(point);
+                } else if (ITEM_COLOR.equals(pixelColor)) {
+                    items.add(point);
                 } else if (PERSON_COLOR.equals(pixelColor)) {
                     if (person != null) {
                         throw new RuntimeException(String.format(
@@ -126,15 +132,28 @@ public class ImageMapAnalyzer implements MapFeatures {
     }
 
     public List<Point> getPintoLocations() {
-        return pintos;
+        List<Point> copy = new ArrayList<Point>();
+        for (Point p : pintos) {
+            copy.add(new Point(p));
+        }
+        
+        return copy;
+    }
+    
+    public List<Point> getItemLocations() {
+        List<Point> copy = new ArrayList<Point>();
+        for (Point p : items) {
+            copy.add(new Point(p));
+        }
+        return copy;
     }
 
     public Point getPersonLocation() {
-        return person;
+        return new Point(person);
     }
 
     public Point getPintoDockingStationLocation() {
-        return dockingStation;
+        return new Point(dockingStation);
     }
     
     public boolean withinBoundaries(int x, int y) {
@@ -219,4 +238,6 @@ public class ImageMapAnalyzer implements MapFeatures {
 
         return buf;
     }
+    
+    
 }

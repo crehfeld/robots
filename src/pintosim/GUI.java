@@ -83,10 +83,17 @@ public class GUI implements ActionListener, ItemListener {
         status.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Status",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to check the status on:"
+                        );
+                if (itemName != null) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Checking status on " + itemName);
+                // tell pinto manager to check status
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Status request canceled");
+                }
             }
         });
 
@@ -95,10 +102,14 @@ public class GUI implements ActionListener, ItemListener {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Cancel",
-                        JOptionPane.INFORMATION_MESSAGE);
+               String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to cancel work on:"
+                        );
+                if (itemName != null) {
+                    // wip.. check with pinto manager again.
+                }
+                else
+                    JOptionPane.showMessageDialog(frame, "Okay, Pintos will continue with their work.");
             }
         });
 
@@ -121,6 +132,7 @@ public class GUI implements ActionListener, ItemListener {
         // Add all the buttons to the panel
         panel.add(location);
         panel.add(retrieve);
+        panel.add(status);
         panel.add(cancel);
         panel.add(help);
         frame.add(panel);

@@ -64,10 +64,17 @@ public class GUI implements ActionListener, ItemListener {
         retrieve.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Retrieve",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to retrieve: "
+                        );
+                if (itemName != null) {
+                    JOptionPane.showMessageDialog(frame, "Retrieving " + itemName);
+                    // tell pinto manager to tell pintos to retrieve the item
+                    // wip
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Item will not be retrieved.");
+                }
             }
         });
 

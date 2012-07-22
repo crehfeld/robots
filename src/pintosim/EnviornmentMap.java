@@ -17,13 +17,17 @@ import java.util.Map;
 public class EnviornmentMap implements LocationChangeListener {
 
     private class MovableObjectList extends ArrayList<MovableObject> {}
+    
     // tracked objects indexed by their tile locations, eg list = trackedObjects[x][y]
+    // this implies they block the space from other things moving onto the tile, although
+    // this class doesnt enforce it, 
     private MovableObjectList[][] tileOccupiers;
+    
     //width and height of the map definition
     private int width = 0;
     private int height = 0;
     private MapFeatures mapFeatures;
-    private List<DijkstraPathFinder> pathFinders = new ArrayList<DijkstraPathFinder>();
+    private List<PathFinder> pathFinders = new ArrayList<PathFinder>();
     /**
      * All tracked objects. We store this separate location because when
      * something moves, it updates its own internal location and then notifies
@@ -42,7 +46,7 @@ public class EnviornmentMap implements LocationChangeListener {
         
         
         for (int x = 0; x < width; x++) {
-            for (int y = 0; y < width; y++) {
+            for (int y = 0; y < height; y++) {
                 tileOccupiers[x][y] = new MovableObjectList();
             }
         }
@@ -123,6 +127,7 @@ public class EnviornmentMap implements LocationChangeListener {
     public void trackObject(MovableObject obj) {
         if (!trackedObjects.containsKey(obj)) {
             trackedObjects.put(obj, new Point(obj.getX(), obj.getY()));
+            tileOccupiers[obj.getX()][obj.getY()].add(obj);
             obj.addLocationChangeListeners(this);
         }
     }
@@ -148,7 +153,7 @@ public class EnviornmentMap implements LocationChangeListener {
     }
 
     // we will then broadcast location changed update messages to it
-    public void addPathFinderListener(DijkstraPathFinder pathFinder) {
+    public void addPathFinderListener(PathFinder pathFinder) {
         pathFinders.add(pathFinder);
     }
 
@@ -206,7 +211,7 @@ public class EnviornmentMap implements LocationChangeListener {
 
         boolean oldLocationUnoccupied = tileOccupiers[oldX][oldY].size() == 0;
 
-        for (DijkstraPathFinder p : pathFinders) {
+        for (PathFinder p : pathFinders) {
             p.spaceOccupied(newX, newY);
             if (oldLocationUnoccupied) {
                 p.spaceUnoccupied(oldX, oldY);

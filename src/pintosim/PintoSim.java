@@ -9,7 +9,7 @@ import java.util.*;
 public class PintoSim {
     
     private static final String OUTPUT_RENDERING_FILENAME = "dynamic-output.txt";
-    private static final int    OUTPUT_RENDERING_FREQUENCY_MS = 50;
+    private static final int    OUTPUT_RENDERING_FREQUENCY_MS = 100;
 
     public static void main(String[] args) {
         //showCommandLineInterface();
@@ -63,7 +63,7 @@ public class PintoSim {
     public static UserInterface build() {
         MapFeatures mapFeatures;
         try {
-            mapFeatures = new ImageMapAnalyzer(new File("maps/10x10-2pintos-1cup.png"));
+            mapFeatures = new ImageMapAnalyzer(new File("maps/30x30-test.png"));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -101,7 +101,7 @@ public class PintoSim {
         
         final PintoManager pm = pintoManager;
         Timer t = new Timer(true);
-        PeriodicTask pt = new PeriodicTask(pintoManager);
+
         TimerTask task = new TimerTask() {
             public void run() {
                 pm.work();
@@ -116,6 +116,7 @@ public class PintoSim {
     
     private static void renderMapToFile(final EnviornmentMap map, String filename) throws IOException {
         final RandomAccessFile file = new RandomAccessFile(filename, "rw");
+        file.setLength(0);//truncate
         Timer t = new Timer(true);
         TimerTask task = new TimerTask() {
             public void run() {

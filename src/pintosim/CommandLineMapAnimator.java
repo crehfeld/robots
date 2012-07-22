@@ -1,12 +1,8 @@
 
 package pintosim;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.*;
+import java.util.*;
 
 
 /*
@@ -16,7 +12,7 @@ import java.util.TimerTask;
  */
 public class CommandLineMapAnimator {
     private static final String FILENAME = "dynamic-output.txt";
-    private static final int POLL_FREQUENCY_MS = 40;
+    private static final int POLL_FREQUENCY_MS = 80;
     
     
     
@@ -33,12 +29,17 @@ public class CommandLineMapAnimator {
         TimerTask task = new TimerTask() {
             String previouData = null;
             String currentData = null;
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[100000];
             int frame = 0;
             public void run() {
                 try {
                     file.seek(0);
                     int bytesRead = file.read(bytes);
+                    if (bytesRead == -1) {
+                        return;
+                    }
+                    
+
                     currentData = new String(bytes, 0, bytesRead);
                     
                     //only print it if its different
@@ -62,4 +63,16 @@ public class CommandLineMapAnimator {
         
         
     }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

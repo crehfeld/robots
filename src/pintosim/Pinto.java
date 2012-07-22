@@ -126,7 +126,7 @@ public class Pinto extends MovableObject {
                 
             case NAVIGATING_TO_DOCKING_STATION:
                 nextLocation = generateNextValidStepTowardsHeading();
-                        _path.add(nextLocation);
+                _path.add(nextLocation);
                 move(nextLocation);
                 // docking station blocks movement
                 if (currentHeadingReached() || currentLocationAdjacentToHeadingLocation()) {
@@ -226,24 +226,23 @@ public class Pinto extends MovableObject {
     }
     
     private Point generateNextValidStepTowardsHeading() {
-
-        if (!enviornmentMap.isLocationWalkable(currentPath.get(0))) {
-            boolean b = enviornmentMap.isLocationWalkable(currentPath.get(0));
-            // randomly decide if we should calc new path or just sit still. 
-            //if we dont do this, we get deadlock too often in narrow corridors 
-            // because both keep calculating the same alternate path and collide again
-            if (Math.random() > 0.5) {
-                currentPath = getPathTowardsHeading();
-            }
-        }
         
-        if (currentPath.isEmpty() || !enviornmentMap.isLocationWalkable(currentPath.get(0))) {
-            return currentLocation;
-        } else {
+        if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
             return currentPath.remove(0);
         }
-        
 
+
+        // randomly decide if we should calc new path or just sit still. 
+        //if we dont do this, we get deadlock too often in narrow corridors 
+        // because both keep calculating the same alternate path and collide again
+        if (Math.random() > 0.5) {
+            currentPath = getPathTowardsHeading();
+            if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
+                return currentPath.remove(0);
+            }
+        }
+
+        return currentLocation;
 
     }
     

@@ -50,8 +50,10 @@ public class GUI implements ActionListener, ItemListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 String itemName = JOptionPane.showInputDialog(
                         frame, "Enter the name of the item: ");
-                if (itemName != null)
+                if (itemName != null) {
                     JOptionPane.showMessageDialog(frame, "Click on the map where the item is located");
+                    // Add a listener to get the coordinates
+                }
                 else
                     JOptionPane.showMessageDialog(frame, "Item not noted");
             }
@@ -98,10 +100,14 @@ public class GUI implements ActionListener, ItemListener {
         help.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Help Desk",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String query = JOptionPane.showInputDialog(frame,
+                        "What is the nature of the problem?");
+                if (query != null)
+                    JOptionPane.showMessageDialog(frame,
+                            "Your query has been sent to the help desk.");
+                else
+                    JOptionPane.showMessageDialog(frame,
+                            "Query canceled.");
             }
         });
 

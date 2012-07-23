@@ -48,10 +48,14 @@ public class GUI implements ActionListener, ItemListener {
         location.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Location",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(
+                        frame, "Enter the name of the item: ");
+                if (itemName != null) {
+                    JOptionPane.showMessageDialog(frame, "Click on the map where the item is located");
+                    // Add a listener to get the coordinates
+                }
+                else
+                    JOptionPane.showMessageDialog(frame, "Item not noted");
             }
         });
 
@@ -60,10 +64,17 @@ public class GUI implements ActionListener, ItemListener {
         retrieve.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Retrieve",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to retrieve: "
+                        );
+                if (itemName != null) {
+                    JOptionPane.showMessageDialog(frame, "Retrieving " + itemName);
+                    // tell pinto manager to tell pintos to retrieve the item
+                    // wip
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Item will not be retrieved.");
+                }
             }
         });
 
@@ -72,10 +83,17 @@ public class GUI implements ActionListener, ItemListener {
         status.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Status",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to check the status on:"
+                        );
+                if (itemName != null) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Checking status on " + itemName);
+                // tell pinto manager to check status
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Status request canceled");
+                }
             }
         });
 
@@ -84,10 +102,14 @@ public class GUI implements ActionListener, ItemListener {
         cancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Cancel",
-                        JOptionPane.INFORMATION_MESSAGE);
+               String itemName = JOptionPane.showInputDialog(frame,
+                        "Enter the name of the item that you wish to cancel work on:"
+                        );
+                if (itemName != null) {
+                    // wip.. check with pinto manager again.
+                }
+                else
+                    JOptionPane.showMessageDialog(frame, "Okay, Pintos will continue with their work.");
             }
         });
 
@@ -96,16 +118,21 @@ public class GUI implements ActionListener, ItemListener {
         help.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame,
-                        "Work in progress",
-                        "Help Desk",
-                        JOptionPane.INFORMATION_MESSAGE);
+                String query = JOptionPane.showInputDialog(frame,
+                        "What is the nature of the problem?");
+                if (query != null)
+                    JOptionPane.showMessageDialog(frame,
+                            "Your query has been sent to the help desk.");
+                else
+                    JOptionPane.showMessageDialog(frame,
+                            "Query canceled.");
             }
         });
 
         // Add all the buttons to the panel
         panel.add(location);
         panel.add(retrieve);
+        panel.add(status);
         panel.add(cancel);
         panel.add(help);
         frame.add(panel);
@@ -117,7 +144,7 @@ public class GUI implements ActionListener, ItemListener {
 
         // General frame stuff
         JFrame.setDefaultLookAndFeelDecorated(true);
-        frame.pack();
+        frame.setSize(680, 680);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
@@ -133,8 +160,18 @@ public class GUI implements ActionListener, ItemListener {
         // wip...
     }
 
-    // if the user selects or deselects an item
+    /**
+     * Add support if the user selects or deselects an item.
+     * @param e the event
+     */
     public void itemStateChanged(ItemEvent e) {
+
+    }
+
+    /**
+     * Draws and updates items on the map
+     */
+    public void draw() {
 
     }
 }

@@ -4,7 +4,6 @@ package pintosim;
 import java.io.*;
 import java.util.*;
 
-
 /*
  this program rapidly polls a file for changes, reprinting the file contents to stdout only once per file modification.
  * the intention is to run this from a shell, and let the shell scroll each time new output is printed. it should 
@@ -31,6 +30,7 @@ public class CommandLineMapAnimator {
             String currentData = null;
             byte[] bytes = new byte[100000];
             int frame = 0;
+
             public void run() {
                 try {
                     file.seek(0);

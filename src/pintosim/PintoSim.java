@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 import java.util.*;
 
 public class PintoSim {
-    private static final String IMAGE_MAP_FILENAME = "maps/30x30-test.png";
+    private static final String IMAGE_MAP_FILENAME = "maps/30x30-lots-of-items.png";
     private static final String OUTPUT_RENDERING_FILENAME = "dynamic-output.txt";
     private static final int    OUTPUT_RENDERING_FREQUENCY_MS = 100;
     private static final int    GAME_UPDATE_FREQUENCY_MS = 300;

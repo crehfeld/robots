@@ -230,7 +230,7 @@ public class EnviornmentMap implements LocationChangeListener {
      */
     public String asciiPrint() {
         return String.format(
-            "Map info: width=%d height=%d\n%s"
+            "Map info: width=%d height=%d\n\n%s"
           , width
           , height
           , asciiPrint(new ArrayList<Point>())
@@ -241,7 +241,11 @@ public class EnviornmentMap implements LocationChangeListener {
     /**
      * Creates an ascii art like string describing the map. The points in the
      * path will be overlayed on top of the map drawing in an effort to make the
-     * path clear
+     * path clear.
+     * 
+     * A Pinto overwrites an item in this ascii rendering, 
+     * so this is why you dont see the item while a pinto is carrying it.
+     * But, it really is moving with it!
      *
      *
      * @param path An ordered List of Points describing a path taken through the

@@ -14,13 +14,9 @@ enum PINTO_STATUS {
 
 public class Pinto extends MovableObject {
 
-    private PintoManager _pintoManager;
-    private Point _myCurrentLocation;
-    private PINTO_STATUS _status;
-    private List<Point> _path;
+    private PintoManager pintoManager;
+    private List<Point> path;
     private Command command;
-    
-    
     private Point itemLocation;
     private Point personLocation;
     private Point dockingStationLocation;
@@ -29,8 +25,7 @@ public class Pinto extends MovableObject {
     private PathFinder pathFinder;
     private Item itemBeingCarried;
     private EnviornmentMap enviornmentMap;
-            
-
+    
     
     
     private enum PintoState {
@@ -42,47 +37,22 @@ public class Pinto extends MovableObject {
     
     private PintoState state = PintoState.IDLE;
 
-    public PINTO_STATUS getStatus() {
-        return this._status;
-    }
-
-    public Pinto(EnviornmentMap map, PintoManager pintoManager, Point initialLocation, PathFinder pathFinder) {
+    public Pinto(Point initialLocation, EnviornmentMap map, PintoManager pintoManager, PathFinder pathFinder) {
         super(initialLocation);
-
         enviornmentMap = map;
-        this._pintoManager = pintoManager;
-        this._status = PINTO_STATUS.BUSY;
-        this._path = null;
-        this._myCurrentLocation = new Point(0, 0);
+        this.pintoManager = pintoManager;
         this.pathFinder = pathFinder;
     }
 
-    public String getItemWorkingOn() {
-        return command.getItemName();
-    }
-
-    public void setStatus(PINTO_STATUS status) {
-        _status = status;
-    }
-    
-    
 
     public void getItem(Command cmd) {
         command = cmd;
-
-
         Point ds = enviornmentMap.getPintoDockingStationLocation();
         Point elderly = enviornmentMap.getPersonLocation();
         Point item = enviornmentMap.getItemLocation(command.getItemName());
 
         setDestinations(item, elderly, ds);
-        _path = new ArrayList<Point>();
-
-        
-
-
-
-
+        path = new ArrayList<Point>();
     }
     
     public void setDestinations(Point itemLocation, Point personLocation, Point dockingStationLocation) {
@@ -98,16 +68,11 @@ public class Pinto extends MovableObject {
     
     public void moveALittleBit() {
         Point nextLocation = null;
-
-        
         switch (state) {
-            case IDLE:
-                //throw new IllegalStateException("nothing to do");
-                
-                break;
-                
+            
             case NAVIGATING_TO_ITEM:
                 nextLocation = generateNextValidStepTowardsHeading();
+                path.add(nextLocation);
                 move(nextLocation);
                 if (currentHeadingReached()) {
                     transitionToNewState(PintoState.NAVIGATING_TO_PERSON);
@@ -117,7 +82,9 @@ public class Pinto extends MovableObject {
                 
             case NAVIGATING_TO_PERSON:
                 nextLocation = generateNextValidStepTowardsHeading();
+                path.add(nextLocation);
                 move(nextLocation);
+                // the person blocks movement onto the tile
                 if (currentLocationAdjacentToHeadingLocation()) {
                     transitionToNewState(PintoState.NAVIGATING_TO_DOCKING_STATION);
                     dropItem();
@@ -126,28 +93,25 @@ public class Pinto extends MovableObject {
                 
             case NAVIGATING_TO_DOCKING_STATION:
                 nextLocation = generateNextValidStepTowardsHeading();
-                _path.add(nextLocation);
+                path.add(nextLocation);
                 move(nextLocation);
-                // docking station blocks movement
+                // the docking station blocks movement onto the tile
                 if (currentHeadingReached() || currentLocationAdjacentToHeadingLocation()) {
                     transitionToNewState(PintoState.IDLE);
-                    command.onComplete(_path);
-                    _pintoManager.setTaskStatus(command.getItemName(), PintoManager.TaskStatus.COMPLETE);
-                    setStatus(PINTO_STATUS.IDLE);
                 }
                 break;
         }
-        //dump();
     }
     
     private void transitionToNewState(PintoState newState) {
         state = newState;
         
-        
         switch (newState) {
             case IDLE:
                 currentHeading = null;
                 currentPath = null;
+                command.onComplete(path);
+                pintoManager.setTaskStatus(command.getItemName(), PintoManager.TaskStatus.COMPLETE);
                 break;
                 
             case NAVIGATING_TO_ITEM:
@@ -158,16 +122,15 @@ public class Pinto extends MovableObject {
             case NAVIGATING_TO_PERSON:
                 currentHeading = personLocation;
                 currentPath = getPathTowardsHeading();
+                pintoManager.setTaskStatus(command.getItemName(), PintoManager.TaskStatus.ITEM_BEING_CARRIED);
                 break;
                 
             case NAVIGATING_TO_DOCKING_STATION:
                 currentHeading = dockingStationLocation;
                 currentPath = getPathTowardsHeading();
+                pintoManager.setTaskStatus(command.getItemName(), PintoManager.TaskStatus.STARTED);
                 break;
-                
         }
-        
-
     }
     
     private List<Point> getPathTowardsHeading() {
@@ -178,18 +141,6 @@ public class Pinto extends MovableObject {
         path.remove(0);
         return path;
     }
-    
-    
-    
-    
-    private void dump() {
-        System.out.printf(
-            "state %s, (%d,%d)\n",
-                state, currentLocation.x, currentLocation.y
-        );
-        System.out.println(enviornmentMap.asciiPrint());
-    }
-    
     
     private boolean currentHeadingReached() {
         return currentPath.size() == 0;
@@ -205,73 +156,34 @@ public class Pinto extends MovableObject {
     private boolean currentLocationAdjacentToHeadingLocation() {
         return isAdjacentTo(currentLocation, currentHeading);
     }
-    
-    private Point generateNextValidStepTowardsHeading___() {
-        Point loc = currentPath.remove(0);
-        if (!enviornmentMap.isLocationWalkable(loc.x, loc.y)) {
-            // randomly decide if we should calc new path or just sit still. 
-            //if we dont do this, we get deadlock too often in narrow corridors 
-            // because both keep calculating the same alternate path and collide again
-            if (Math.random() > 0.5) {
-                currentPath = pathFinder.getPath(currentLocation, currentHeading);
-                
-                loc = currentPath.remove(0);
-            } else {
-                loc = currentLocation;
-            }
 
-        }
-
-        return loc;
-    }
-    
     private Point generateNextValidStepTowardsHeading() {
-        
         if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
             return currentPath.remove(0);
         }
-
-
-        // randomly decide if we should calc new path or just sit still. 
-        //if we dont do this, we get deadlock too often in narrow corridors 
-        // because both keep calculating the same alternate path and collide again
-        if (Math.random() > 0.5) {
+        
+        //we only reach here if we cant move
+        if (!shouldSitStill()) {
             currentPath = getPathTowardsHeading();
             if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
                 return currentPath.remove(0);
             }
         }
 
+        // stay put, for now
         return currentLocation;
-
     }
-    
-    
-    
-    
-
     
     public boolean isIdle() {
         return state == PintoState.IDLE;
     }
     
     
-
-    public void cancelItem(Command cmd) {
-        command.onCancel(_myCurrentLocation);
-        DijkstraPathFinder itemToDsPathFinder = new DijkstraPathFinder(enviornmentMap);
-        Point ds = enviornmentMap.getPintoDockingStationLocation();
-        Point item = _myCurrentLocation;
-        try {
-            itemToDsPathFinder.computePathsFrom(item);
-            List<Point> path = itemToDsPathFinder.getShortestPathTo(ds);
-
-            _path.addAll(path);
-            command.onComplete(_path);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return;
-        }
+    // randomly decide if we should calc new path or just sit still. 
+    //if we dont do this, we get deadlock too often in narrow corridors 
+    // because both keep calculating the same alternate path and collide again
+    private boolean shouldSitStill() {
+        return Math.random() > 0.8;
     }
     
     public boolean isCarryingAnItem() {
@@ -286,7 +198,6 @@ public class Pinto extends MovableObject {
         itemBeingCarried = null;
     }
     
-    
     public void abortItemRetrieval() {
         if (isCarryingAnItem()) {
             dropItem();
@@ -295,19 +206,17 @@ public class Pinto extends MovableObject {
         if (state != PintoState.IDLE && state != PintoState.NAVIGATING_TO_DOCKING_STATION) {
             transitionToNewState(PintoState.NAVIGATING_TO_DOCKING_STATION);
         }
+        
+        command.onCancel(currentLocation);
     }
-    
     
     public void move(Point loc) {
         super.move(loc);
-        //the reason you dont see the item animated while its being 
-        // carried is because the item is painted first, then the pinto carrying it
-        // so the pinto is painted over it, hiding it
+
         if (itemBeingCarried != null) {
             itemBeingCarried.move(loc);
         }
     }
     
-    
-    
+
 }

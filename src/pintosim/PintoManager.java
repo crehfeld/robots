@@ -6,52 +6,58 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.awt.Point;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PintoManager {
 
     public enum TaskStatus {
-
-        REGISTER, QUEUED, STARTED, COMPLETE
+        QUEUED
+      , STARTED
+      , ITEM_BEING_CARRIED
+      , COMPLETE
     }
-    // members
-    private int _uniquePintoId;
-    private int _maxAvailablePintos;
-    private int _availablePintos;
-    private List<Pinto> _pintos;
-    private EnviornmentMap _map;
-    private Map<String, TaskStatus> _taskStatusMap;
-    private Map<String, Command> itemNameCommandMap = new HashMap<String, Command>();
     
+    private class Task {
+        Command command;
+        TaskStatus status;
+        Pinto pinto;
+        List<Point> path = new ArrayList<Point>();
+        boolean paused = false;
+        
+        Task(Command cmd) {
+            command = cmd;
+            status = TaskStatus.QUEUED;
+        }
+    }
     
     private List<Pinto> pintos = new ArrayList<Pinto>();
+    private EnviornmentMap map;
+    private Queue<Task> queuedTasks = new ConcurrentLinkedQueue<Task>();
+    private List<Task> runningTasks = new CopyOnWriteArrayList<Task>();
+    private List<Task> completedTasks = new CopyOnWriteArrayList<Task>();
 
-    // member functions
+
     public PintoManager(EnviornmentMap map) {
-        _uniquePintoId = 1;
-        _maxAvailablePintos = 5;
-        _availablePintos = _maxAvailablePintos;
-        _pintos = new ArrayList<Pinto>();
-        _taskStatusMap = new ConcurrentHashMap<String, TaskStatus>();
-        _map = map;
+        this.map = map;
     }
     
     public void addPinto(Pinto pinto) {
-        //pintos.add(pinto);
-        _pintos.add(pinto);
+        pintos.add(pinto);
     }
     
+    
     public void work() {
-        doWork();
-        for (Pinto pinto : _pintos) {
-            if (!pinto.isIdle()) {
-                pinto.moveALittleBit();
+        assignQueuedTasksToIdlePintos();
+        for (Task task : runningTasks) {
+            if (!task.paused) {
+                task.pinto.moveALittleBit();
             }
         }
     }
     
     private Pinto getIdlePinto() {
-        for (Pinto pinto : _pintos) {
+        for (Pinto pinto : pintos) {
             if (pinto.isIdle()) {
                 return pinto;
             }
@@ -60,161 +66,193 @@ public class PintoManager {
         return null;
     }
     
-    private void assignTasksToIdlePintos() {
-        Pinto idlePinto = getIdlePinto();
-        
-    }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    public void doWork() {
-        Iterator it = _taskStatusMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, TaskStatus> pairs = (Map.Entry) it.next();
-            String itemName = pairs.getKey();
-            if (pairs.getValue() == TaskStatus.QUEUED) {
-                Pinto pinto = getIdlePinto();
-                if (pinto != null) {
-                    Command cmd = itemNameCommandMap.get(itemName);
-                    setTaskStatus(itemName, TaskStatus.STARTED);
-                    pinto.getItem(cmd);
-                }
-            }
-        }
-    }
-
-    public Pinto getPintoWorkingOn(String item) {
-        // All Pinto have been put to work, get first IDLE pinto
-        if (_pintos.isEmpty()) {
-            return null;
-        }
-
-        Pinto pinto = null;
-        Iterator<Pinto> it = _pintos.iterator();
-        while (it.hasNext()) {
-            pinto = it.next();
-            String itemName = pinto.getItemWorkingOn();
-            if (item.equalsIgnoreCase(itemName)) {
-                break;
-            }
-        }
-        return (pinto);
-    }
-
-
-
     public boolean canImmediatelyFulfillATask() {
         return getIdlePinto() != null;
     }
 
-    public boolean taskExistsFor(Item item) {
-        TaskStatus status = getTaskStatus(item.getName().toLowerCase());
-        if (status == null || status == TaskStatus.COMPLETE) {
+    public TaskStatus getTaskStatus(String itemName) {
+        Task task = null;
+        task = getRunningTaskFor(itemName);
+        if (task == null) {
+            task = getQueuedTaskFor(itemName);
+            if (task == null) {
+                task = getCompletedTaskFor(itemName);
+            }
+        }
+        
+        return task == null ? null : task.status;
+    }
+    
+    
+    private boolean completedTaskExistsFor(String itemName) {
+        return getCompletedTaskFor(itemName) != null;
+    }
+    
+    public boolean completedTaskExistsFor(Item item) {
+        return completedTaskExistsFor(item.getName());
+    }
+
+    private boolean uncompletedTaskExistsFor(String itemName) {
+        return getRunningTaskFor(itemName) != null || getQueuedTaskFor(itemName) != null;
+    }
+    
+    public boolean uncompletedTaskExistsFor(Item item) {
+        return uncompletedTaskExistsFor(item.getName());
+    }
+    
+    private boolean isItemBeingCarried(String itemName) {
+        Task task = getRunningTaskFor(itemName);
+        if (task == null) {
             return false;
         }
-        return true;
+        return task.status == TaskStatus.ITEM_BEING_CARRIED;
     }
-
-    public TaskStatus getTaskStatus(String itemName) {
-        return _taskStatusMap.get(itemName.toLowerCase());
+    
+    public boolean isItemBeingCarried(Item item) {
+        return isItemBeingCarried(item.getName());
     }
-
-    public void setTaskStatus(String itemName, TaskStatus status) {
-        if (itemName == null) {
-            String e = "No itemName provided to set status ";
-            throw new NullPointerException(e);
-        }
-        switch (status) {
-            case COMPLETE:
-                //updateAvailablePintos();
-                _taskStatusMap.remove(itemName);
+    
+    
+    
+    private void addItemRetrievalCommand(Command cmd) {
+        queuedTasks.add(new Task(cmd));
+    }
+    
+    private void assignQueuedTasksToIdlePintos() {
+        Iterator<Task> it = queuedTasks.iterator();
+        while (it.hasNext()) {
+            Pinto pinto = getIdlePinto();
+            if (pinto == null) {
                 break;
-            default:
-                _taskStatusMap.put(itemName, status);
-                break;
+            }
+            Task task = it.next();
+            task.status = TaskStatus.STARTED;
+            task.pinto = pinto;
+            //move the task to the running task list
+            it.remove();
+            runningTasks.add(task);
+            pinto.getItem(task.command);
         }
     }
+    
+    private Task getRunningTaskFor(String itemName) {
+        for (Task task : runningTasks) {
+            if (task.command.getItemName().equals(itemName)) {
+                return task;
+            }
+        }
+        
+        return null;
+    }
+    
+    private Task getQueuedTaskFor(String itemName) {
+        for (Task task : queuedTasks) {
+            if (task.command.getItemName().equals(itemName)) {
+                return task;
+            }
+        }
+        
+        return null;
+    }
+    
+    private Task getCompletedTaskFor(String itemName) {
+        for (Task task : completedTasks) {
+            if (task.command.getItemName().equals(itemName)) {
+                return task;
+            }
+        }
+        
+        return null;
+    }
+    
+    
+    public void pauseTaskIfRunning(Item item) {
+        Task task = getRunningTaskFor(item.getName());
+        if (task == null) {
+            return;
+        }
+        
+        task.paused = true;
+    }
+    
+    public void unPauseTask(Item item) {
+        Task task = getRunningTaskFor(item.getName());
+        if (task == null) {
+            return;
+        }
+        
+        task.paused = false;
+    }
+    
 
+    
+    private void cancelTaskFor(String itemName) {
+        Task task = null;
+        
+        task = getQueuedTaskFor(itemName);
+        if (task != null) {
+            queuedTasks.remove(task);
+            completedTasks.add(task);
+            task.status = TaskStatus.COMPLETE;
+            return;
+        }
+        
+        task = getRunningTaskFor(itemName);
+        if (task != null) {
+            task.pinto.abortItemRetrieval();
+            task.paused = false;//it may have been paused, need to unpause so pinto can go home
+            return;
+        }
+        
+
+        
+    }
+    
+    
     public void addCommand(Command cmd) {
-
-        String itemName = cmd.getItemName().toLowerCase();
+        String itemName = cmd.getItemName();
         if (itemName == null) {
             String e = "No item associated with command ";
             throw new NullPointerException(e);
         }
-
-        TaskStatus status = getTaskStatus(itemName);
-        if (status == null) {
-            setTaskStatus(itemName, TaskStatus.REGISTER);
-            itemNameCommandMap.put(itemName, cmd);
-        }
+        
         switch (cmd.getType()) {
             case GET_ITEM:
-                switch (getTaskStatus(itemName)) {
-                    case STARTED:
-                        Pinto pinto = getPintoWorkingOn(itemName);
-                        if (pinto == null) {
-                            String e = "No Pinto out fetching "
-                                    + itemName.toLowerCase();
-                            throw new NullPointerException(e);
-                        }
-                        String msg = "Pinto "
-                                + "is already out fetching item "
-                                + itemName;
-
-                        cmd.onDisplay(msg);
-                        break;
-                    case QUEUED:
-                        msg = "identical get_item "
-                                + itemName
-                                + " request is in the queue "
-                                + " and waiting for the next available pinto.";
-                        cmd.onDisplay(msg);
-                        break;
-                    case REGISTER:
-                        setTaskStatus(itemName, TaskStatus.QUEUED);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("unknown task status type");
-                }
+                addItemRetrievalCommand(cmd);
                 break;
             case CANCEL_GET_ITEM:
-                switch (status) {
-                    case QUEUED:
-                        setTaskStatus(itemName, TaskStatus.COMPLETE);
-                        break;
-                    case STARTED:
-                        Pinto pinto = getPintoWorkingOn(itemName);
-                        if (pinto == null) {
-                            String e = "No Pinto out fetching " + itemName.toLowerCase();
-                            throw new NullPointerException(e);
-                        }
-                        pinto.abortItemRetrieval();
-                        setTaskStatus(itemName, TaskStatus.COMPLETE);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("unexpected task state");
-                }
+                cancelTaskFor(itemName);
                 break;
             default:
                 throw new UnsupportedOperationException("unknown command type");
         }
+        
     }
+    
+    
+    public void setTaskStatus(String itemName, TaskStatus status) {
+        
+        Task task = null;
+        task = getRunningTaskFor(itemName);
+        task.status = status;
+        
+        switch (status) {
+            case COMPLETE:
+                runningTasks.remove(task);
+                completedTasks.add(task);
+                break;
+        } 
+    }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

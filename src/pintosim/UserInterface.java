@@ -179,38 +179,23 @@ public class UserInterface {
             public void onComplete(List<Point> path) {
 
                 display(String.format(
-                    "\nHere's your %s."
+                    "\nHere's your %s.\n"
                   , cmd.getItemName()
                 ));
                 
-                display("I will show you a map with the path that the Pinto took traced on top.");
-                String legend = "Map Legend:";
-                legend += "\nD='Pinto Docking Station'\nE='An Elderly'\nI='An item'\nX='An obstruction(eg, a wall)'\nO='A location in the pintos path'";
-                display(legend);
-
-                display(String.format(
-                    "%s"
-                  , map.asciiPrint(path)
-                ));
+//                display("I will show you a map with the path that the Pinto took traced on top.");
+//                String legend = "Map Legend:";
+//                legend += "\nD='Pinto Docking Station'\nE='An Elderly'\nI='An item'\nX='An obstruction(eg, a wall)'\nO='A location in the pintos path'";
+//                display(legend);
+//
+//                display(String.format(
+//                    "%s"
+//                  , map.asciiPrint(path)
+//                ));
 
             }
 
-            public void onPintoMove(Point currentLocation) {}
-
-            public void onDisplay(String msg) {
-                display(msg);
-            }
-
-            public void onCancel(Point currentLocation, String itemName) {
-                Item item = map.getItemByName(itemName);
-                display(String.format(
-                        "Item %s dropped at (%d, %d)."
-                        + " I can now retrieve it for you from here"
-                        + " anytime you want.",
-                        cmd.getItemName(),
-                        currentLocation.x,
-                        currentLocation.y));
-            }
+            public void onCancel(Point currentLocation, String itemName) {}
         });
 
         pintoManager.addCommand(cmd);
@@ -228,7 +213,7 @@ public class UserInterface {
             return;
         }
 
-        if (!pintoManager.uncompletedTaskExistsFor(item)) {
+        if (!pintoManager.uncompletedTaskExistsFor(item) && !pintoManager.completedTaskExistsFor(item)) {
             display(String.format(
                 "You never requested that I retrieve %s for you, so there is no status to report."
                 , item.getName()
@@ -237,7 +222,7 @@ public class UserInterface {
             return;
         }
 
-        switch (pintoManager.getTaskStatus(item.getName())) {
+        switch (pintoManager.getTaskStatus(item)) {
             case COMPLETE:
                 display(String.format(
                     "The status of your retrival request for %s is 'Complete'. I already delivered it."
@@ -268,8 +253,8 @@ public class UserInterface {
      * remember the item name, and then prompt the user for confirmation.
      * Assuming they input y or n, the next input will be a confirmation and
      * will trigger performConfirmedCancelGetItem() where we will either use the
-     * stored command to cancel it, or we null out the stored command and just
-     * let the pinto keep going
+     * stored command to cancel it, or we null out the stored command and unpause
+     * the pinto
      *
      * @param cmd
      */
@@ -285,45 +270,52 @@ public class UserInterface {
             return;
         }
 
-        if (!pintoManager.uncompletedTaskExistsFor(item)) {
-            if (pintoManager.completedTaskExistsFor(item)) {
-                display(String.format(
-                    "I already completed the request for %s, so it's too late to cancel."
-                    , item.getName()
-                ));
+        if (pintoManager.uncompletedTaskExistsFor(item)) {
+            if (pintoManager.isItemBeingCarried(item)) {
+                display("A pinto is carrying the item now. The item will be left on the ground. Do you want to cancel it? (y/n)");
+                potentialGetItemCancelationCommand = cmd;
+                pintoManager.pauseTaskIfRunning(item);
             } else {
-                display(String.format(
-                    "You never requested that I retrieve %s for you, so there is nothing to cancel."
-                    , item.getName()
-                ));
+                display("Ok, it's canceled.");
+                pintoManager.addCommand(cmd);
             }
 
             return;
         }
         
-        //reaching here means there is an uncompleted task for the item
-        if (pintoManager.isItemBeingCarried(item)) {
-            display("A pinto is carrying the item now. The item will be left on the ground. Do you want to cancel it? (y/n)");
-            potentialGetItemCancelationCommand = cmd;
-            pintoManager.pauseTaskIfRunning(item);
-        } else {
-            display("Ok, it's canceled.");
-            pintoManager.addCommand(cmd);
+        if (pintoManager.completedTaskExistsFor(item)) {
+            display(String.format(
+                "I already completed the request for %s, so it's too late to cancel."
+                , item.getName()
+            ));
+            
+            return;
         }
-
+        
+        display(String.format(
+            "You never requested that I retrieve %s for you, so there is nothing to cancel."
+            , item.getName()
+        ));
     }
 
     private void performConfirmedCancelGetItem(Command cmd) {
         if (potentialGetItemCancelationCommand == null) {
             return;
         }
+        
+        Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
 
         if (cmd.getConfirmation() == true) {
-            display("Ok, I will leave it on the ground.");
+            display(String.format(
+                "Ok, I will leave it on the ground at (%d, %d)."
+              , item.getX()
+              , item.getY()
+            ));
+            
             pintoManager.addCommand(potentialGetItemCancelationCommand);
         } else {
             display("Ok, you will have the item soon.");
-            pintoManager.unPauseTask(map.getItemByName(potentialGetItemCancelationCommand.getItemName()));
+            pintoManager.unPauseTask(item);
         }
         potentialGetItemCancelationCommand = null;
     }
@@ -349,8 +341,6 @@ public class UserInterface {
                 + "   'system, show map'\n"
                 + "You can exit the program by saying:\n"
                 + "   'quit'\n";
-
-
 
         display(s);
     }

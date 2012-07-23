@@ -15,11 +15,9 @@ public abstract class GetItemCallback {
     public void onComplete(List<Point> path) {
 
     }
-    public void onDisplay(String msg) {
 
-    }
     public void onCancel(Point location, String itemName) {
 
     }
-    public void onPintoMove(Point currentLocation) {}
+
 }

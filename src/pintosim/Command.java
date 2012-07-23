@@ -140,19 +140,6 @@ public class Command {
         getItemCallback.onComplete(path);
     }
     
-    /**
-     * Invokes the onDisplay() method on the composed GetItemCallback
-     */
-    public void onDisplay(String msg) {
-        getItemCallback.onDisplay(msg);
-    }
-    
-    /**
-     * Invokes the onPintoMove() method on the composed GetItemCallback
-     */
-    public void onPintoMove(Point pt) {
-        getItemCallback.onPintoMove(pt);
-    }
     
     public void onCancel(Point pt) {
         getItemCallback.onCancel(pt, this.itemName.toLowerCase());

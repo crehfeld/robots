@@ -10,6 +10,8 @@ public class PintoSim {
     private static final String IMAGE_MAP_FILENAME = "maps/30x30-test.png";
     private static final String OUTPUT_RENDERING_FILENAME = "dynamic-output.txt";
     private static final int    OUTPUT_RENDERING_FREQUENCY_MS = 100;
+    private static final int    GAME_UPDATE_FREQUENCY_MS = 300;
+    
 
     public static void main(String[] args) {
         showCommandLineInterface();
@@ -28,7 +30,7 @@ public class PintoSim {
 
         while (0 != input.trim().indexOf("quit")) {
             ui.addInput(input);
-            System.out.print("Enter a command, type help, or type quit: ");
+            System.out.print("\n\nEnter a command, type help, or type quit: ");
             input = scanner.nextLine();
         }
     }
@@ -90,7 +92,7 @@ public class PintoSim {
                 pm.work();
             }
         };
-        t.scheduleAtFixedRate(task, 0, 20 * 10);
+        t.scheduleAtFixedRate(task, 0, GAME_UPDATE_FREQUENCY_MS);
         
 
         return ui;
@@ -116,7 +118,6 @@ public class PintoSim {
                 try {
                     file.seek(0);
                     file.writeChars(map.asciiPrint() );
-
                 } catch (IOException e) {
                     e.printStackTrace();
                     cancel();

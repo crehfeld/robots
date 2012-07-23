@@ -2,7 +2,6 @@ package pintosim;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.awt.Point;
 import java.util.*;
@@ -70,7 +69,7 @@ public class PintoManager {
         return getIdlePinto() != null;
     }
 
-    public TaskStatus getTaskStatus(String itemName) {
+    private TaskStatus getTaskStatus(String itemName) {
         Task task = null;
         task = getRunningTaskFor(itemName);
         if (task == null) {
@@ -81,6 +80,10 @@ public class PintoManager {
         }
         
         return task == null ? null : task.status;
+    }
+    
+    public TaskStatus getTaskStatus(Item item) {
+        return getTaskStatus(item.getName());
     }
     
     
@@ -231,7 +234,6 @@ public class PintoManager {
     
     
     public void setTaskStatus(String itemName, TaskStatus status) {
-        
         Task task = null;
         task = getRunningTaskFor(itemName);
         task.status = status;
@@ -245,14 +247,4 @@ public class PintoManager {
     }
     
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

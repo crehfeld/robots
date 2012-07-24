@@ -10,8 +10,11 @@ import java.awt.*;
 public interface GuiShape {
 
     /**
-     * Draws the item
+     * Draws the map and updates items when necessary
+     * @param g2 the graphics object to draw
      */
     void draw(Graphics2D g2);
 
+
+    // wip... add more methods to support GuiEnvironmentMap
 }

@@ -8,27 +8,22 @@ import java.awt.geom.*;
  */
 public class GuiEnvironmentMap implements GuiShape {
 
+    // The location of the items on the map
     private int x;
     private int y;
 
     /**
      * Constructs a GuiEnvironmentMap object
+     * @see GUI
      */
     public GuiEnvironmentMap() {
-        // wip...
+        // work in progress
+        // have to draw the whole map here that is shown to the user when
+        // they run the program for the first time.
     }
 
     /**
-     * Draws the map and updates items when necessary
-     */
-    public void draw() {
-
-        // Draw the docking station
-        Rectangle2D.Double dockingStation = new Rectangle2D.Double();
-    }
-
-    /**
-     * Adds items to the map
+     * Adds items to the map.
      * @param itemName the name of the item
      */
     public void addItem(String itemName) {
@@ -36,9 +31,12 @@ public class GuiEnvironmentMap implements GuiShape {
     }
 
     /**
-     * Draws the item
+     * Draws the map and updates items when necessary.
+     * @see GuiShape
      */
     public void draw(Graphics2D g2) {
 
+        // Draw the docking station
+        Rectangle2D.Double dockingStation = new Rectangle2D.Double();
     }
 }

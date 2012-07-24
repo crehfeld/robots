@@ -3,14 +3,12 @@ package pintosim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
 /**
  * Provides a graphical front end to PintoSim.
- *
  * @author PlzSendTheCodes team
  */
-public class GUI implements ActionListener, ItemListener {
+public class GUI implements ActionListener {
 
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
@@ -163,13 +161,5 @@ public class GUI implements ActionListener, ItemListener {
                     JOptionPane.INFORMATION_MESSAGE);
         }
         // wip...
-    }
-
-    /**
-     * Add support if the user selects or deselects an item.
-     * @param e the event
-     */
-    public void itemStateChanged(ItemEvent e) {
-
     }
 }

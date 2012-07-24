@@ -14,6 +14,8 @@ public class GUI implements ActionListener, ItemListener {
 
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
+    JPanel panel = new JPanel();
+    JTextArea textArea = new JTextArea();
 
     // Backend objects
     private CommandParser interpreter;
@@ -28,7 +30,7 @@ public class GUI implements ActionListener, ItemListener {
     public static void main(String[] args) {
         new GUI();
         GuiEnvironmentMap map = new GuiEnvironmentMap();
-        map.draw();
+        //map.draw();
     }
 
     /**
@@ -46,7 +48,6 @@ public class GUI implements ActionListener, ItemListener {
         menu.add(aboutMenu);
 
         // Create a JPanel that flows from left to right for JButtons
-        JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // note the location
@@ -124,14 +125,12 @@ public class GUI implements ActionListener, ItemListener {
         help.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String query = JOptionPane.showInputDialog(frame,
-                        "What is the nature of the problem?");
-                if (query != null)
-                    JOptionPane.showMessageDialog(frame,
-                            "Your query has been sent to the help desk.");
-                else
-                    JOptionPane.showMessageDialog(frame,
-                            "Query canceled.");
+                JTextArea textArea = new JTextArea(80, 680);
+                JTextField help = new JTextField("Query: ");
+                textArea.setEnabled(true);
+                textArea.setEditable(true);
+                textArea.add(help);
+                frame.add(textArea);
             }
         });
 

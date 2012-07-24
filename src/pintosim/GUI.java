@@ -52,7 +52,7 @@ public class GUI implements ActionListener, ItemListener {
                         frame, "Enter the name of the item: ");
                 if (itemName != null) {
                     JOptionPane.showMessageDialog(frame, "Click on the map where the item is located");
-                    // Add a listener to get the coordinates
+                    // Add a mouse listener to get the coordinates
                 }
                 else
                     JOptionPane.showMessageDialog(frame, "Item not noted");
@@ -169,9 +169,10 @@ public class GUI implements ActionListener, ItemListener {
     }
 
     /**
-     * Draws and updates items on the map
+     * Draws and updates items on the map.
+     * @param itemName the name of the item
      */
-    public void draw() {
+    public void draw(String itemName) {
 
     }
 }

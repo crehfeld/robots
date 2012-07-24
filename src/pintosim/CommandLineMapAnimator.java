@@ -13,8 +13,6 @@ public class CommandLineMapAnimator {
     private static final String FILENAME = "dynamic-output.txt";
     private static final int POLL_FREQUENCY_MS = 80;
     
-    
-    
     public static void main(String[] args) {
         RandomAccessFile tmp = null;
         try {
@@ -38,7 +36,6 @@ public class CommandLineMapAnimator {
                     if (bytesRead == -1) {
                         return;
                     }
-                    
 
                     currentData = new String(bytes, 0, bytesRead);
                     
@@ -56,23 +53,7 @@ public class CommandLineMapAnimator {
                 }
             }
         };
-        
-        
-        
-        t.scheduleAtFixedRate(task, 0, POLL_FREQUENCY_MS);
-        
-        
-    }
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        t.scheduleAtFixedRate(task, 0, POLL_FREQUENCY_MS);
+    }
 }

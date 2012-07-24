@@ -21,8 +21,14 @@ public class GUI implements ActionListener, ItemListener {
     private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
 
+    // Item position on the map
+    private int x;
+    private int y;
+
     public static void main(String[] args) {
         new GUI();
+        GuiEnvironmentMap map = new GuiEnvironmentMap();
+        map.draw();
     }
 
     /**
@@ -165,14 +171,6 @@ public class GUI implements ActionListener, ItemListener {
      * @param e the event
      */
     public void itemStateChanged(ItemEvent e) {
-
-    }
-
-    /**
-     * Draws and updates items on the map.
-     * @param itemName the name of the item
-     */
-    public void draw(String itemName) {
 
     }
 }

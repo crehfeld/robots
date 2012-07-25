@@ -48,11 +48,17 @@ public class GUI implements ActionListener, FocusListener {
         xLoc.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-               // do nothing
+                // Listen for input
             }
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                x = Integer.parseInt(xLoc.getText());
+                try {
+                    x = Integer.parseInt(xLoc.getText());
+                    x = Math.abs(x);
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(frame, "Invalid input for x");
+                    xLoc.setText("");
+                }
             }
         });
 
@@ -61,11 +67,17 @@ public class GUI implements ActionListener, FocusListener {
         yLoc.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-               // Do nothing
+               // Listen for input
             }
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                y = Integer.parseInt(yLoc.getText());
+                try {
+                    y = Integer.parseInt(yLoc.getText());
+                    y = Math.abs(y);
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(frame, "Invalid input for y");
+                    yLoc.setText("");
+                }
             }
         });
 
@@ -75,12 +87,17 @@ public class GUI implements ActionListener, FocusListener {
         itemName.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-                // Do nothing
+                // Listen for input
             }
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
                 name = itemName.getText();
+
+                // Clear all text fields after user is done entering
+                xLoc.setText("");
+                yLoc.setText("");
+                itemName.setText("");
             }
         });
 

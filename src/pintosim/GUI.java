@@ -36,6 +36,10 @@ public class GUI implements ActionListener, FocusListener {
         frame.setJMenuBar(menu);
         menu.add(aboutMenu);
 
+        /* Main Panel */ 
+        JPanel content = new JPanel();
+        content.setPreferredSize(new Dimension(680, 680));
+
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
         locationPanel.setBorder(BorderFactory.createTitledBorder("Note Location"));
@@ -54,7 +58,7 @@ public class GUI implements ActionListener, FocusListener {
             public void focusLost(FocusEvent focusEvent) {
                 try {
                     x = Integer.parseInt(xLoc.getText());
-                    x = Math.abs(x);
+                    x = Math.abs(x); // ignore negative numbers
                 } catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(frame, "Invalid input for x");
                     xLoc.setText("");
@@ -73,7 +77,7 @@ public class GUI implements ActionListener, FocusListener {
             public void focusLost(FocusEvent focusEvent) {
                 try {
                     y = Integer.parseInt(yLoc.getText());
-                    y = Math.abs(y);
+                    y = Math.abs(y); // ignore negative numbers
                 } catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(frame, "Invalid input for y");
                     yLoc.setText("");

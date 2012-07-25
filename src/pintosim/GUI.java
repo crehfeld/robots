@@ -1,6 +1,7 @@
 package pintosim;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -8,12 +9,10 @@ import java.awt.event.*;
  * Provides a graphical front end to PintoSim.
  * @author PlzSendTheCodes team
  */
-public class GUI implements ActionListener {
+public class GUI implements ActionListener, FocusListener {
 
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
-    JPanel panel = new JPanel();
-    JTextArea textArea = new JTextArea();
 
     // Backend objects
     private CommandParser interpreter;
@@ -21,124 +20,87 @@ public class GUI implements ActionListener {
     private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
 
-    // Item position on the map
+    // Item on the map
+    private String name;
     private int x;
     private int y;
-
-    public static void main(String[] args) {
-        new GUI();
-        GuiEnvironmentMap map = new GuiEnvironmentMap();
-        //map.draw();
-    }
 
     /**
      * Constructs a GUI object.
      */
     public GUI() {
 
-        /*this.interpreter = interpreter;
-        this.map = map;
-        this.pintoManager = pintoManager;*/
-
+        /* Menu Bar */
         JMenuBar menu = new JMenuBar();
         JMenu aboutMenu = new JMenu("About");
         frame.setJMenuBar(menu);
         menu.add(aboutMenu);
 
-        // Create a JPanel that flows from left to right for JButtons
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        /* Add a panel for location */
+        JPanel locationPanel = new JPanel(new FlowLayout());
+        locationPanel.setBorder(BorderFactory.createTitledBorder("Note Location"));
+        locationPanel.setPreferredSize(new Dimension(350, 130));
+        JLabel xLabel = new JLabel("X: ");
+        JLabel yLabel = new JLabel("Y: ");
 
-        // note the location
-        JButton location = new JButton("Note a location");
-        location.addActionListener(new ActionListener() {
+        final JTextField xLoc = new JTextField("", 10);
+        // Get the x location
+        xLoc.addFocusListener(new FocusListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String itemName = JOptionPane.showInputDialog(
-                        frame, "Enter the name of the item: ");
-                if (itemName != null) {
-                    JOptionPane.showMessageDialog(frame, "Click on the map where the item is located");
-                    // Add a mouse listener to get the coordinates
-                }
-                else
-                    JOptionPane.showMessageDialog(frame, "Item not noted");
+            public void focusGained(FocusEvent focusEvent) {
+               // do nothing
+            }
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                x = Integer.parseInt(xLoc.getText());
             }
         });
 
-        // retrieve an item
-        JButton retrieve = new JButton("Retrieve an item");
-        retrieve.addActionListener(new ActionListener() {
+        final JTextField yLoc = new JTextField("", 10);
+        // Get the y location
+        yLoc.addFocusListener(new FocusListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String itemName = JOptionPane.showInputDialog(frame,
-                        "Enter the name of the item that you wish to retrieve: "
-                        );
-                if (itemName != null) {
-                    JOptionPane.showMessageDialog(frame, "Retrieving " + itemName);
-                    // tell pinto manager to tell pintos to retrieve the item
-                    // wip
-                }
-                else {
-                    JOptionPane.showMessageDialog(frame, "Item will not be retrieved.");
-                }
+            public void focusGained(FocusEvent focusEvent) {
+               // Do nothing
+            }
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                y = Integer.parseInt(yLoc.getText());
             }
         });
 
-        // get status
-        JButton status = new JButton("Check Status");
-        status.addActionListener(new ActionListener() {
+        JLabel itemLabel = new JLabel("Name: ");
+
+        final JTextField itemName = new JTextField("", 22);
+        itemName.addFocusListener(new FocusListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String itemName = JOptionPane.showInputDialog(frame,
-                        "Enter the name of the item that you wish to check the status on:"
-                        );
-                if (itemName != null) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Checking status on " + itemName);
-                // tell pinto manager to check status
-                }
-                else {
-                    JOptionPane.showMessageDialog(frame, "Status request canceled");
-                }
+            public void focusGained(FocusEvent focusEvent) {
+                // Do nothing
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                name = itemName.getText();
             }
         });
 
-        // cancel a command
-        JButton cancel = new JButton("Cancel");
-        cancel.addActionListener(new ActionListener() {
+        locationPanel.add(xLabel, FlowLayout.LEFT);
+        locationPanel.add(xLoc);
+        locationPanel.add(yLabel);
+        locationPanel.add(yLoc);
+        locationPanel.add(itemLabel, BorderLayout.PAGE_START);
+        locationPanel.add(itemName, BorderLayout.EAST);
+
+        /* Location button  */
+        JButton locationButton = new JButton("Add item");
+        locationPanel.add(locationButton);
+        locationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-               String itemName = JOptionPane.showInputDialog(frame,
-                        "Enter the name of the item that you wish to cancel work on:"
-                        );
-                if (itemName != null) {
-                    // wip.. check with pinto manager again.
-                }
-                else
-                    JOptionPane.showMessageDialog(frame, "Okay, Pintos will continue with their work.");
+                JOptionPane.showMessageDialog(frame, name + " has been noted at " +
+                        x + " " + y + "!");
             }
         });
-
-        // call help desk
-        JButton help = new JButton("Call help desk");
-        help.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JTextArea textArea = new JTextArea(80, 680);
-                JTextField help = new JTextField("Query: ");
-                textArea.setEnabled(true);
-                textArea.setEditable(true);
-                textArea.add(help);
-                frame.add(textArea);
-            }
-        });
-
-        // Add all the buttons to the panel
-        panel.add(location);
-        panel.add(retrieve);
-        panel.add(status);
-        panel.add(cancel);
-        panel.add(help);
-        frame.add(panel);
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
@@ -146,8 +108,9 @@ public class GUI implements ActionListener {
         aboutTeam.addActionListener(this);
 
         // General frame stuff
+        frame.add(locationPanel);
         JFrame.setDefaultLookAndFeelDecorated(true);
-        frame.setSize(680, 680);
+        frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
@@ -160,6 +123,19 @@ public class GUI implements ActionListener {
                     "About PintoSim",
                     JOptionPane.INFORMATION_MESSAGE);
         }
-        // wip...
+    }
+
+    public static void main(String[] args) {
+        new GUI();
+    }
+
+    @Override
+    public void focusGained(FocusEvent focusEvent) {
+        // Do nothing.
+    }
+
+    @Override
+    public void focusLost(FocusEvent focusEvent) {
+        // Is overriden above where needed anyways.
     }
 }

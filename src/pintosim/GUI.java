@@ -24,6 +24,7 @@ public class GUI implements ActionListener, FocusListener {
     private String name;
     private int x;
     private int y;
+    private String query;
 
     /**
      * Constructs a GUI object.
@@ -199,6 +200,8 @@ public class GUI implements ActionListener, FocusListener {
                     // Work in progress:
                     // Check status here and then show this dialog:
                     JOptionPane.showMessageDialog(frame, "Getting status of " + name);
+                    // Clear out fields
+                    statusNameField.setText("");
                 }
             }
         });
@@ -210,13 +213,74 @@ public class GUI implements ActionListener, FocusListener {
         JLabel cancelNameLabel = new JLabel("Name: ");
 
         final JTextField cancelNameField = new JTextField("", 8);
+        cancelNameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                // Listen for input
+            }
 
-
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                name = cancelNameField.getText();
+            }
+        });
+        // Cancel Button
+        JButton cancelButton = new JButton("Cancel Item");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (cancelNameField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                }
+                else {
+                    // Work in progress
+                    // Show confirm dialogs if Pinto already has the item
+                    // or this message dialog if the pinto
+                    // hasn't gotten the item yet:
+                    JOptionPane.showMessageDialog(frame, "Okay, retrieval " +
+                            "of " + name + " has been canceled");
+                    // Clear out fields
+                    cancelNameField.setText("");
+                }
+            }
+        });
 
         /* Help Desk Panel */
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
         helpPanel.setPreferredSize(new Dimension(200, 130));
+        JLabel helpLabel = new JLabel("Query: ");
+
+        final JTextField helpField = new JTextField("", 8);
+        helpField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                query = helpField.getText();
+            }
+        });
+        // Help button
+        JButton helpButton = new JButton("Send to Help Desk");
+        helpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (helpField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No query entered!");
+                }
+                else {
+                    // Send to help desk.
+                    JOptionPane.showMessageDialog(frame, "Your query has been" +
+                            " sent to the help desk! Someone will be" +
+                            " dispatched shortly.");
+                    // Clear all fields
+                    helpField.setText("");
+                }
+            }
+        });
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
@@ -224,7 +288,6 @@ public class GUI implements ActionListener, FocusListener {
         aboutTeam.addActionListener(this);
 
         /* Frame settings */
-
         // Add all the panels to the frame
         locationPanel.add(xLabel, FlowLayout.LEFT);
         locationPanel.add(xLoc);
@@ -239,6 +302,12 @@ public class GUI implements ActionListener, FocusListener {
         statusPanel.add(statusNameLabel);
         statusPanel.add(statusNameField);
         statusPanel.add(statusButton);
+        cancelPanel.add(cancelNameLabel);
+        cancelPanel.add(cancelNameField);
+        cancelPanel.add(cancelButton);
+        helpPanel.add(helpLabel);
+        helpPanel.add(helpField);
+        helpPanel.add(helpButton);
         commands.add(locationPanel);
         commands.add(getPanel);
         commands.add(statusPanel);

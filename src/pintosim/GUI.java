@@ -331,6 +331,7 @@ public class GUI implements ActionListener, FocusListener {
                     "About PintoSim",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+        // Add more actions and menu items if necessary.
     }
 
     public static void main(String[] args) {

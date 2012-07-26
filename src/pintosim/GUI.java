@@ -122,7 +122,8 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    // Work in progress: Actually add the item to the map.
+                    // Work in progress: Actually add the item to the map, if
+                    // possible.
                     JOptionPane.showMessageDialog(frame, name + " has been noted at " +
                             x + " " + y + "!");
                 }

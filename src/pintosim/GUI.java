@@ -2,6 +2,7 @@ package pintosim;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -39,9 +40,9 @@ public class GUI implements ActionListener, FocusListener {
 
         /* add a content panel and a panel for all the commands. */
         JPanel content = new JPanel();
-        content.setPreferredSize(new Dimension(800, 680));
+        content.setPreferredSize(new Dimension(1080, 680));
         JPanel commands = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        commands.setPreferredSize(new Dimension(800, 140));
+        commands.setPreferredSize(new Dimension(1080, 140));
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
@@ -122,7 +123,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    // Work in progress: Actually add the item to the map. 
+                    // Work in progress: Actually add the item to the map.
                     JOptionPane.showMessageDialog(frame, name + " has been noted at " +
                             x + " " + y + "!");
                 }
@@ -170,6 +171,21 @@ public class GUI implements ActionListener, FocusListener {
             }
         });
 
+        /* Get Status Panel */
+        JPanel statusPanel = new JPanel(new FlowLayout());
+        statusPanel.setBorder(BorderFactory.createTitledBorder(" Get status "));
+        statusPanel.setPreferredSize(new Dimension(200, 130));
+
+        /* Cancel item Panel */
+        JPanel cancelPanel = new JPanel(new FlowLayout());
+        cancelPanel.setBorder(BorderFactory.createTitledBorder(" Cancel Item "));
+        cancelPanel.setPreferredSize(new Dimension(200, 130));
+
+        /* Help Desk Panel */
+        JPanel helpPanel = new JPanel(new FlowLayout());
+        helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
+        helpPanel.setPreferredSize(new Dimension(200, 130));
+
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
         aboutMenu.add(aboutTeam);
@@ -190,6 +206,9 @@ public class GUI implements ActionListener, FocusListener {
         getPanel.add(getItemButton);
         commands.add(locationPanel);
         commands.add(getPanel);
+        commands.add(statusPanel);
+        commands.add(cancelPanel);
+        commands.add(helpPanel);
         content.add(commands);
         frame.add(content);
         frame.pack();

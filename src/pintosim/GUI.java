@@ -7,6 +7,7 @@ import java.awt.event.*;
 
 /**
  * Provides a graphical front end to PintoSim.
+ *
  * @author PlzSendTheCodes team
  */
 public class GUI implements ActionListener, FocusListener {
@@ -36,9 +37,12 @@ public class GUI implements ActionListener, FocusListener {
         frame.setJMenuBar(menu);
         menu.add(aboutMenu);
 
-        /* Main Panel */ 
+        /* add a content panel and a panel for all the commands. */
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(680, 680));
+        JPanel commands = new JPanel(new FlowLayout());
+        commands.setPreferredSize(new Dimension(680, 140));
+        content.add(commands);
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
@@ -54,14 +58,19 @@ public class GUI implements ActionListener, FocusListener {
             public void focusGained(FocusEvent focusEvent) {
                 // Listen for input
             }
+
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                try {
-                    x = Integer.parseInt(xLoc.getText());
-                    x = Math.abs(x); // ignore negative numbers
-                } catch (NumberFormatException nfe) {
-                    JOptionPane.showMessageDialog(frame, "Invalid input for x");
-                    xLoc.setText("");
+                if (xLoc.getText().equals("")) {
+                    x = 0;
+                } else {
+                    try {
+                        x = Integer.parseInt(xLoc.getText());
+                        x = Math.abs(x); // ignore negative numbers
+                    } catch (NumberFormatException nfe) {
+                        JOptionPane.showMessageDialog(frame, "Invalid input for x");
+                        xLoc.setText("");
+                    }
                 }
             }
         });
@@ -71,16 +80,21 @@ public class GUI implements ActionListener, FocusListener {
         yLoc.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-               // Listen for input
+                // Listen for input
             }
+
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                try {
-                    y = Integer.parseInt(yLoc.getText());
-                    y = Math.abs(y); // ignore negative numbers
-                } catch (NumberFormatException nfe) {
-                    JOptionPane.showMessageDialog(frame, "Invalid input for y");
-                    yLoc.setText("");
+                if (yLoc.getText().equals("")) {
+                    y = 0;
+                } else {
+                    try {
+                        y = Integer.parseInt(yLoc.getText());
+                        y = Math.abs(y); // ignore negative numbers
+                    } catch (NumberFormatException nfe) {
+                        JOptionPane.showMessageDialog(frame, "Invalid input for y");
+                        yLoc.setText("");
+                    }
                 }
             }
         });
@@ -111,6 +125,7 @@ public class GUI implements ActionListener, FocusListener {
         locationPanel.add(yLoc);
         locationPanel.add(itemLabel, BorderLayout.PAGE_START);
         locationPanel.add(itemName, BorderLayout.EAST);
+        commands.add(locationPanel);
 
         /* Location button  */
         JButton locationButton = new JButton("Add item");
@@ -129,7 +144,7 @@ public class GUI implements ActionListener, FocusListener {
         aboutTeam.addActionListener(this);
 
         // General frame stuff
-        frame.add(locationPanel);
+        frame.add(content);
         JFrame.setDefaultLookAndFeelDecorated(true);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,11 +167,11 @@ public class GUI implements ActionListener, FocusListener {
 
     @Override
     public void focusGained(FocusEvent focusEvent) {
-        // Do nothing.
+        // Listen for input.
     }
 
     @Override
     public void focusLost(FocusEvent focusEvent) {
-        // Is overriden above where needed anyways.
+        // Method is overridden whenever needed.
     }
 }

@@ -46,11 +46,11 @@ public class GUI implements ActionListener, FocusListener {
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
         locationPanel.setBorder(BorderFactory.createTitledBorder(" Note Location "));
-        locationPanel.setPreferredSize(new Dimension(350, 130));
+        locationPanel.setPreferredSize(new Dimension(250, 130));
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
 
-        final JTextField xLoc = new JTextField("", 10);
+        final JTextField xLoc = new JTextField("", 5);
         // Get the x location
         xLoc.addFocusListener(new FocusListener() {
             @Override
@@ -74,7 +74,7 @@ public class GUI implements ActionListener, FocusListener {
             }
         });
 
-        final JTextField yLoc = new JTextField("", 10);
+        final JTextField yLoc = new JTextField("", 5);
         // Get the y location
         yLoc.addFocusListener(new FocusListener() {
             @Override
@@ -100,7 +100,7 @@ public class GUI implements ActionListener, FocusListener {
 
         JLabel itemLabel = new JLabel("Name: ");
 
-        final JTextField itemName = new JTextField("", 22);
+        final JTextField itemName = new JTextField("", 10);
         itemName.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -123,8 +123,9 @@ public class GUI implements ActionListener, FocusListener {
                 itemName.setText("");
             }
         });
-        /* Location button  */
+        // Location button
         JButton locationButton = new JButton("Add item");
+        locationButton.setLayout(new FlowLayout());
         locationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -140,10 +141,10 @@ public class GUI implements ActionListener, FocusListener {
         /* Get item panel */
         JPanel getPanel = new JPanel(new FlowLayout());
         getPanel.setBorder(BorderFactory.createTitledBorder(" Get Item "));
-        getPanel.setPreferredSize(new Dimension(350, 130));
+        getPanel.setPreferredSize(new Dimension(200, 130));
         JLabel getItemName = new JLabel("Name: ");
 
-        final JTextField getItemField = new JTextField("", 10);
+        final JTextField getItemField = new JTextField("", 8);
         getItemName.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -153,13 +154,31 @@ public class GUI implements ActionListener, FocusListener {
             @Override
             public void focusLost(FocusEvent focusEvent) {
                 if (getItemField.getText().equals("")) {
-
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
                     name = getItemField.getText();
                 }
             }
         });
+        // Get item button
+        JButton getItemButton = new JButton("Get Item");
+        getItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (itemName.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                }
+                else {
+                    // first check if the item is valid and then,
+                    // show this dialog if Pintos are available:
+                    // if not, show another dialog. Work in progress still.
+                    JOptionPane.showMessageDialog(frame, "Pintos have been " +
+                            "dispatched to get " + name + "!");
+                }
+            }
+        });
+
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
@@ -178,6 +197,7 @@ public class GUI implements ActionListener, FocusListener {
         locationPanel.add(locationButton);
         getPanel.add(getItemName);
         getPanel.add(getItemField);
+        getPanel.add(getItemButton);
         commands.add(locationPanel);
         commands.add(getPanel);
         content.add(commands);
@@ -192,7 +212,7 @@ public class GUI implements ActionListener, FocusListener {
 
     // Manages actions on a object
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equalsIgnoreCase("About PintoSim")) {
+        if (e.getActionCommand().equals("About PintoSim")) {
             JOptionPane.showMessageDialog(frame,
                     "Designed by PlzSendTheCodes team",
                     "About PintoSim",

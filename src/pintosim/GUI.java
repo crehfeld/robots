@@ -39,9 +39,9 @@ public class GUI implements ActionListener, FocusListener {
 
         /* add a content panel and a panel for all the commands. */
         JPanel content = new JPanel();
-        content.setPreferredSize(new Dimension(680, 680));
-        JPanel commands = new JPanel(new FlowLayout());
-        commands.setPreferredSize(new Dimension(680, 140));
+        content.setPreferredSize(new Dimension(800, 680));
+        JPanel commands = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        commands.setPreferredSize(new Dimension(800, 140));
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
@@ -176,6 +176,8 @@ public class GUI implements ActionListener, FocusListener {
         locationPanel.add(itemLabel, BorderLayout.PAGE_START);
         locationPanel.add(itemName, BorderLayout.EAST);
         locationPanel.add(locationButton);
+        getPanel.add(getItemName);
+        getPanel.add(getItemField);
         commands.add(locationPanel);
         commands.add(getPanel);
         content.add(commands);

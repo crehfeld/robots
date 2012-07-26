@@ -42,11 +42,10 @@ public class GUI implements ActionListener, FocusListener {
         content.setPreferredSize(new Dimension(680, 680));
         JPanel commands = new JPanel(new FlowLayout());
         commands.setPreferredSize(new Dimension(680, 140));
-        content.add(commands);
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
-        locationPanel.setBorder(BorderFactory.createTitledBorder("Note Location"));
+        locationPanel.setBorder(BorderFactory.createTitledBorder(" Note Location "));
         locationPanel.setPreferredSize(new Dimension(350, 130));
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
@@ -110,7 +109,13 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                name = itemName.getText();
+                if (itemName.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    itemName.setText("");
+                }
+                else {
+                    name = itemName.getText();
+                }
 
                 // Clear all text fields after user is done entering
                 xLoc.setText("");
@@ -118,23 +123,41 @@ public class GUI implements ActionListener, FocusListener {
                 itemName.setText("");
             }
         });
-
-        locationPanel.add(xLabel, FlowLayout.LEFT);
-        locationPanel.add(xLoc);
-        locationPanel.add(yLabel);
-        locationPanel.add(yLoc);
-        locationPanel.add(itemLabel, BorderLayout.PAGE_START);
-        locationPanel.add(itemName, BorderLayout.EAST);
-        commands.add(locationPanel);
-
         /* Location button  */
         JButton locationButton = new JButton("Add item");
-        locationPanel.add(locationButton);
         locationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JOptionPane.showMessageDialog(frame, name + " has been noted at " +
+                if (itemName.getText().equals(""))
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                else {
+                    JOptionPane.showMessageDialog(frame, name + " has been noted at " +
                         x + " " + y + "!");
+                }
+            }
+        });
+
+        /* Get item panel */
+        JPanel getPanel = new JPanel(new FlowLayout());
+        getPanel.setBorder(BorderFactory.createTitledBorder(" Get Item "));
+        getPanel.setPreferredSize(new Dimension(350, 130));
+        JLabel getItemName = new JLabel("Name: ");
+
+        final JTextField getItemField = new JTextField("", 10);
+        getItemName.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                // Listen for input
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                if (getItemField.getText().equals("")) {
+
+                }
+                else {
+                    name = getItemField.getText();
+                }
             }
         });
 
@@ -143,10 +166,24 @@ public class GUI implements ActionListener, FocusListener {
         aboutMenu.add(aboutTeam);
         aboutTeam.addActionListener(this);
 
-        // General frame stuff
+        /* Frame settings */
+
+        // Add all the panels to the frame
+        locationPanel.add(xLabel, FlowLayout.LEFT);
+        locationPanel.add(xLoc);
+        locationPanel.add(yLabel);
+        locationPanel.add(yLoc);
+        locationPanel.add(itemLabel, BorderLayout.PAGE_START);
+        locationPanel.add(itemName, BorderLayout.EAST);
+        locationPanel.add(locationButton);
+        commands.add(locationPanel);
+        commands.add(getPanel);
+        content.add(commands);
         frame.add(content);
-        JFrame.setDefaultLookAndFeelDecorated(true);
         frame.pack();
+
+        // set defaults and make it visible
+        JFrame.setDefaultLookAndFeelDecorated(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

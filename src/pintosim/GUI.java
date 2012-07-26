@@ -109,18 +109,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                if (itemName.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
-                    itemName.setText("");
-                }
-                else {
                     name = itemName.getText();
-                }
-
-                // Clear all text fields after user is done entering
-                xLoc.setText("");
-                yLoc.setText("");
-                itemName.setText("");
             }
         });
         // Location button
@@ -129,12 +118,18 @@ public class GUI implements ActionListener, FocusListener {
         locationButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (itemName.getText().equals(""))
+                if (itemName.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                else {
-                    JOptionPane.showMessageDialog(frame, name + " has been noted at " +
-                        x + " " + y + "!");
                 }
+                else {
+                    // Work in progress: Actually add the item to the map. 
+                    JOptionPane.showMessageDialog(frame, name + " has been noted at " +
+                            x + " " + y + "!");
+                }
+                // Clear all text fields after user is done entering
+                xLoc.setText("");
+                yLoc.setText("");
+                itemName.setText("");
             }
         });
 
@@ -145,7 +140,7 @@ public class GUI implements ActionListener, FocusListener {
         JLabel getItemName = new JLabel("Name: ");
 
         final JTextField getItemField = new JTextField("", 8);
-        getItemName.addFocusListener(new FocusListener() {
+        getItemField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
                 // Listen for input
@@ -153,12 +148,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                if (getItemField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
                     name = getItemField.getText();
-                }
             }
         });
         // Get item button
@@ -166,19 +156,19 @@ public class GUI implements ActionListener, FocusListener {
         getItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (itemName.getText().equals("")) {
+                if (getItemField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
+                } else {
                     // first check if the item is valid and then,
                     // show this dialog if Pintos are available:
                     // if not, show another dialog. Work in progress still.
                     JOptionPane.showMessageDialog(frame, "Pintos have been " +
                             "dispatched to get " + name + "!");
+                    // Clear out values
+                    getItemField.setText("");
                 }
             }
         });
-
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");

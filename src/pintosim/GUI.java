@@ -175,6 +175,35 @@ public class GUI implements ActionListener, FocusListener {
         JPanel statusPanel = new JPanel(new FlowLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder(" Get status "));
         statusPanel.setPreferredSize(new Dimension(200, 130));
+        JLabel statusNameLabel = new JLabel("Name: ");
+
+        final JTextField statusNameField = new JTextField("", 8);
+        statusNameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                // Listen for input
+            }
+
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                name = statusNameField.getText();
+            }
+        });
+        // status button
+        JButton statusButton = new JButton("Get Status of item");
+        statusButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (statusNameField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                }
+                else {
+                    // Work in progress:
+                    // Check status here and then show this dialog:
+                    JOptionPane.showMessageDialog(frame, "Getting status of " + name);
+                }
+            }
+        });
 
         /* Cancel item Panel */
         JPanel cancelPanel = new JPanel(new FlowLayout());
@@ -204,6 +233,9 @@ public class GUI implements ActionListener, FocusListener {
         getPanel.add(getItemName);
         getPanel.add(getItemField);
         getPanel.add(getItemButton);
+        statusPanel.add(statusNameLabel);
+        statusPanel.add(statusNameField);
+        statusPanel.add(statusButton);
         commands.add(locationPanel);
         commands.add(getPanel);
         commands.add(statusPanel);

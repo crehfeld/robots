@@ -1,8 +1,6 @@
 package pintosim;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -209,6 +207,11 @@ public class GUI implements ActionListener, FocusListener {
         JPanel cancelPanel = new JPanel(new FlowLayout());
         cancelPanel.setBorder(BorderFactory.createTitledBorder(" Cancel Item "));
         cancelPanel.setPreferredSize(new Dimension(200, 130));
+        JLabel cancelNameLabel = new JLabel("Name: ");
+
+        final JTextField cancelNameField = new JTextField("", 8);
+
+
 
         /* Help Desk Panel */
         JPanel helpPanel = new JPanel(new FlowLayout());

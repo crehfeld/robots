@@ -17,6 +17,7 @@ public class GUI implements ActionListener, FocusListener {
 
     // Backend objects
     private CommandParser interpreter;
+    private Command command;
     private EnviornmentMap map;
     private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
@@ -29,8 +30,18 @@ public class GUI implements ActionListener, FocusListener {
 
     /**
      * Constructs a GUI object.
+     * @param pintomanager manages pintos
+     * @param map the environment map
+     * @param command a command
      */
-    public GUI() {
+    public GUI(/*PintoManager pintomanager, EnviornmentMap map, Command command*/) {
+
+        // @Note: Make the GUI work with the rest of the system:
+
+        /*
+        pintomanager = this.pintoManager;
+        map = this.map;
+        command = this.command; */
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -252,7 +263,6 @@ public class GUI implements ActionListener, FocusListener {
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
         helpPanel.setPreferredSize(new Dimension(250, 130));
-        //JLabel helpLabel = new JLabel("Query: ");
 
         final JTextArea helpArea = new JTextArea("");
         helpArea.setBorder(BorderFactory.createTitledBorder(""));
@@ -327,7 +337,6 @@ public class GUI implements ActionListener, FocusListener {
         cancelPanel.add(cancelNameLabel);
         cancelPanel.add(cancelNameField);
         cancelPanel.add(cancelButton);
-        //helpPanel.add(helpLabel);
         helpPanel.add(helpArea);
         helpPanel.add(helpButton);
         commands.add(locationPanel);
@@ -360,7 +369,6 @@ public class GUI implements ActionListener, FocusListener {
     }
 
     public static void main(String[] args) {
-        new GUI();
     }
 
     @Override

@@ -41,8 +41,9 @@ public class GUI implements ActionListener, FocusListener {
         /* add a content panel and a panel for all the commands. */
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(1100, 680));
+        statusOfCommand.setText("Pintos are waiting for a command.");
         JPanel commands = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        commands.setPreferredSize(new Dimension(1100, 180));
+        commands.setPreferredSize(new Dimension(1100, 161));
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
@@ -291,11 +292,17 @@ public class GUI implements ActionListener, FocusListener {
             }
         });
 
-        JPanel commandStatus = new JPanel(new BorderLayout());
-        commandStatus.setBorder(BorderFactory.createTitledBorder(" Status of commands "));
-        commandStatus.setPreferredSize(new Dimension(1070, 43));
-        statusOfCommand.setText("Pintos are waiting for your commands.");
-        commandStatus.add(statusOfCommand);
+        /* Create a commandStatus panel to notify the user if a command finishes */
+        // Work in progress for now.
+        JPanel commandStatus = new JPanel(new FlowLayout());
+        //commandStatus.setBorder(BorderFactory.createTitledBorder(" Status of commands "));
+        commandStatus.setPreferredSize(new Dimension(1070, 25));
+        commandStatus.add(statusOfCommand, BorderLayout.CENTER);
+
+        /* Create a panel to house (pun intended) the house map */
+        JPanel mapPanel = new JPanel(new BorderLayout());
+        mapPanel.setBorder(BorderFactory.createTitledBorder(" House Map "));
+        mapPanel.setPreferredSize(new Dimension(1070, 500));
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
@@ -329,7 +336,9 @@ public class GUI implements ActionListener, FocusListener {
         commands.add(cancelPanel);
         commands.add(helpPanel);
         commands.add(commandStatus);
+        content.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.PAGE_END);
         content.add(commands);
+        content.add(mapPanel);
         frame.add(content);
         frame.pack();
 

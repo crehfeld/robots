@@ -39,18 +39,18 @@ public class GUI implements ActionListener, FocusListener {
 
         /* add a content panel and a panel for all the commands. */
         JPanel content = new JPanel();
-        content.setPreferredSize(new Dimension(1080, 680));
+        content.setPreferredSize(new Dimension(1100, 680));
         JPanel commands = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        commands.setPreferredSize(new Dimension(1080, 140));
+        commands.setPreferredSize(new Dimension(1100, 140));
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
         locationPanel.setBorder(BorderFactory.createTitledBorder(" Note Location "));
-        locationPanel.setPreferredSize(new Dimension(250, 130));
+        locationPanel.setPreferredSize(new Dimension(200, 130));
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
 
-        final JTextField xLoc = new JTextField("", 5);
+        final JTextField xLoc = new JTextField("", 3);
         // Get the x location
         xLoc.addFocusListener(new FocusListener() {
             @Override
@@ -74,7 +74,7 @@ public class GUI implements ActionListener, FocusListener {
             }
         });
 
-        final JTextField yLoc = new JTextField("", 5);
+        final JTextField yLoc = new JTextField("", 3);
         // Get the y location
         yLoc.addFocusListener(new FocusListener() {
             @Override
@@ -100,7 +100,7 @@ public class GUI implements ActionListener, FocusListener {
 
         JLabel itemLabel = new JLabel("Name: ");
 
-        final JTextField itemName = new JTextField("", 10);
+        final JTextField itemName = new JTextField("", 8);
         itemName.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -249,27 +249,34 @@ public class GUI implements ActionListener, FocusListener {
         /* Help Desk Panel */
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
-        helpPanel.setPreferredSize(new Dimension(200, 130));
-        JLabel helpLabel = new JLabel("Query: ");
+        helpPanel.setPreferredSize(new Dimension(250, 130));
+        //JLabel helpLabel = new JLabel("Query: ");
 
-        final JTextField helpField = new JTextField("", 8);
-        helpField.addFocusListener(new FocusListener() {
+        final JTextArea helpArea = new JTextArea("");
+        helpArea.setBorder(BorderFactory.createTitledBorder(""));
+        final JScrollPane helpScrollPane = new JScrollPane(helpArea);
+        helpScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        helpScrollPane.setPreferredSize(new Dimension(50, 30));
+        helpArea.setEditable(true);
+        helpArea.setPreferredSize(new Dimension(220, 60));
+        helpArea.setCaretPosition(helpArea.getDocument().getLength());
+        helpArea.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
-
+                // Listen for input
             }
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                query = helpField.getText();
+                query = helpArea.getText();
             }
         });
         // Help button
-        JButton helpButton = new JButton("Send to Help Desk");
+        JButton helpButton = new JButton("Send query to Help Desk");
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (helpField.getText().equals("")) {
+                if (helpArea.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No query entered!");
                 }
                 else {
@@ -278,7 +285,7 @@ public class GUI implements ActionListener, FocusListener {
                             " sent to the help desk! Someone will be" +
                             " dispatched shortly.");
                     // Clear all fields
-                    helpField.setText("");
+                    helpArea.setText("");
                 }
             }
         });
@@ -306,8 +313,8 @@ public class GUI implements ActionListener, FocusListener {
         cancelPanel.add(cancelNameLabel);
         cancelPanel.add(cancelNameField);
         cancelPanel.add(cancelButton);
-        helpPanel.add(helpLabel);
-        helpPanel.add(helpField);
+        //helpPanel.add(helpLabel);
+        helpPanel.add(helpArea);
         helpPanel.add(helpButton);
         commands.add(locationPanel);
         commands.add(getPanel);

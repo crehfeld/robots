@@ -13,6 +13,7 @@ public class GUI implements ActionListener, FocusListener {
 
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
+    private JLabel statusOfCommand = new JLabel("");
 
     // Backend objects
     private CommandParser interpreter;
@@ -41,7 +42,7 @@ public class GUI implements ActionListener, FocusListener {
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(1100, 680));
         JPanel commands = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        commands.setPreferredSize(new Dimension(1100, 140));
+        commands.setPreferredSize(new Dimension(1100, 180));
 
         /* Add a panel for location */
         JPanel locationPanel = new JPanel(new FlowLayout());
@@ -290,6 +291,12 @@ public class GUI implements ActionListener, FocusListener {
             }
         });
 
+        JPanel commandStatus = new JPanel(new BorderLayout());
+        commandStatus.setBorder(BorderFactory.createTitledBorder(" Status of commands "));
+        commandStatus.setPreferredSize(new Dimension(1070, 43));
+        statusOfCommand.setText("Pintos are waiting for your commands.");
+        commandStatus.add(statusOfCommand);
+
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");
         aboutMenu.add(aboutTeam);
@@ -321,6 +328,7 @@ public class GUI implements ActionListener, FocusListener {
         commands.add(statusPanel);
         commands.add(cancelPanel);
         commands.add(helpPanel);
+        commands.add(commandStatus);
         content.add(commands);
         frame.add(content);
         frame.pack();

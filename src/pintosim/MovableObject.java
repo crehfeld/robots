@@ -22,9 +22,11 @@ public abstract class MovableObject {
     }
     
     public void move(int x, int y) {
+        Point newLocation = new Point(x, y);
+        Point oldLocation = new Point(currentLocation);
         currentLocation.x = x;
         currentLocation.y = y;
-        notifyLocationChangeListeners();
+        notifyLocationChangeListeners(oldLocation, newLocation);
     }
     
     public int getX() {
@@ -35,9 +37,9 @@ public abstract class MovableObject {
         return currentLocation.y;
     }
     
-    private void notifyLocationChangeListeners() {
+    private void notifyLocationChangeListeners(Point oldLocation, Point newLocation) {
         for (LocationChangeListener listener : listeners) {
-            listener.updateLocation(this);
+            listener.updateLocation(this, oldLocation, newLocation);
         }
     }
     

@@ -12,4 +12,5 @@ public class Item extends MovableObject {
     public String getName() {
         return name;
     }
+
 }

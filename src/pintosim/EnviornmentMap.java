@@ -28,6 +28,7 @@ public class EnviornmentMap implements LocationChangeListener {
     private int height = 0;
     private MapFeatures mapFeatures;
     private List<PathFinder> pathFinders = new ArrayList<PathFinder>();
+
     /**
      * All tracked objects. We store this separate location because when
      * something moves, it updates its own internal location and then notifies
@@ -68,6 +69,32 @@ public class EnviornmentMap implements LocationChangeListener {
     public synchronized List<MovableObject> getObjectsAt(int x, int y) {
         return new ArrayList<MovableObject>(tileOccupiers[x][y]);
     }
+    
+    /**
+     * Provides a List of all the MovableObjects currently located on a tile.
+     * The List will be an empty List for the case of 0 objects. The List is not
+     * a live list, so after a movement has occurred, the list may no longer
+     * properly represent the objects on the tile. The MovableObjects contained
+     * in the list are not clones. <br> <br> Precondition: The coordinates are
+     * within the boundaries as determined by {@link #withinBoundaries(int, int) withinBoundaries()}
+     *
+     * @param x The x coordinate of the tile.
+     * @param y The y coordinate of the tile.
+     *
+     * @return A list of MovableObjects
+     */
+    public synchronized List<Item> getItemsAt(int x, int y) {
+        ArrayList<Item> items = new ArrayList<Item>();
+        for (Item item : trackedItems.values()) {
+            if (x == item.getX() && y == item.getY()) {
+                items.add(item);
+            }
+        }
+        return items;
+    }
+    
+    
+    
 
     /**
      * A walkable location is a location that isn't a wall, couch, or other such
@@ -156,6 +183,8 @@ public class EnviornmentMap implements LocationChangeListener {
     public void addPathFinderListener(PathFinder pathFinder) {
         pathFinders.add(pathFinder);
     }
+    
+
 
 
 
@@ -179,38 +208,24 @@ public class EnviornmentMap implements LocationChangeListener {
         return walkabilityMatrix;
     }
 
-    
+
     
     // all movable objects should call this method when they move
     // it allows this map to keep up to date on the locations of things.
     // it also notifies all the pathfinders of the change too
-    public synchronized void updateLocation(MovableObject obj) {
-        int newX = obj.getX();
-        int newY = obj.getY();
-
-        if (tileOccupiers[newX][newY] == null) {
-            throw new RuntimeException("shouldnt be able to move there.");
-        }
-
-        Point oldLocation = trackedObjects.get(obj);
-
-        if (oldLocation == null) {
-                        return;
-           // throw new RuntimeException("trackObject() was never called on this MovableObject ");
-
-        }
-
+    public synchronized void updateLocation(MovableObject obj, Point oldLocation, Point newLocation) {
         int oldX = oldLocation.x;
         int oldY = oldLocation.y;
+        int newX = newLocation.x;
+        int newY = newLocation.y;
 
-        tileOccupiers[oldX][oldY].remove(obj);
-        tileOccupiers[newX][newY].add(obj);
-
-        oldLocation.x = newX;
-        oldLocation.y = newY;
-
+        // not everything occupies a tile. eg, items dont "occupy" because they dont prevent other things from moving there
+        // check if this object was in the occupier list
+        if (tileOccupiers[oldX][oldY].contains(obj)) {
+            tileOccupiers[oldX][oldY].remove(obj);
+            tileOccupiers[newX][newY].add(obj);
+        }
         boolean oldLocationUnoccupied = tileOccupiers[oldX][oldY].size() == 0;
-
         for (PathFinder p : pathFinders) {
             p.spaceOccupied(newX, newY);
             if (oldLocationUnoccupied) {
@@ -218,8 +233,8 @@ public class EnviornmentMap implements LocationChangeListener {
             }
         }
 
-
     }
+    
     
     
     

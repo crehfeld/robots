@@ -198,6 +198,7 @@ public class GUI implements ActionListener, FocusListener {
                 name = statusNameField.getText();
             }
         });
+
         // status button
         JButton statusButton = new JButton("Get Status of item");
         statusButton.addActionListener(new ActionListener() {
@@ -205,10 +206,10 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (statusNameField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                } else {
-                    // Work in progress:
-                    // Check status here and then show this dialog:
-                    JOptionPane.showMessageDialog(frame, "Getting status of " + name);
+                }
+                else {
+                    command = new Command(Command.Type.GET_ITEM_STATUS);
+                    performGetItemStatus(command);
                     // Clear out fields
                     statusNameField.setText("");
                 }
@@ -239,15 +240,11 @@ public class GUI implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (cancelNameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
-                } else {
-                    // Work in progress
-                    // Show confirm dialogs if Pinto already has the item
-                    // or this message dialog if the pinto
-                    // hasn't gotten the item yet:
-                    JOptionPane.showMessageDialog(frame, "Okay, retrieval " +
-                            "of " + name + " has been canceled");
-                    // Clear out fields
+                    statusOfCommand.setText("No name entered!");
+                }
+                else {
+                    command = new Command(Command.Type.CANCEL_GET_ITEM);
+                    performCancelGetItem(command);
                     cancelNameField.setText("");
                 }
             }
@@ -446,6 +443,60 @@ public class GUI implements ActionListener, FocusListener {
             });
             pintoManager.addCommand(cmd);
         }
+    }
+
+    /**
+     * Gets the status of the item.
+     * @param cmd the getStatus command
+     */
+    public void performGetItemStatus(Command cmd) {
+        String errorText = "";
+        String succeedText = "";
+        Item item = map.getItemByName(cmd.getItemName());
+        if (item == null) {
+            errorText = "I never knew where " + cmd.getItemName() +
+                    " was so it is possible I am not retrieving it for you. You need to first" +
+                    " tell me where the item is.";
+            statusOfCommand.setText(errorText);
+        }
+
+        if (!pintoManager.uncompletedTaskExistsFor(item) && !pintoManager.completedTaskExistsFor(item)) {
+            errorText = item.getName() + " was not requested by you so there is nothing to report.";
+            statusOfCommand.setText(errorText);
+        }
+
+        switch (pintoManager.getTaskStatus(item)) {
+            case COMPLETE:
+                errorText = "I have already delivered " + item.getName() +
+                        " to you. Status is complete.";
+                statusOfCommand.setText(errorText);
+                break;
+            case QUEUED:
+                succeedText = "The status of your retrival request for " +
+                        item.getName() +
+                        " is 'Queued'. All my pintos are busy" +
+                        " doing other things. They will get it for you soon.";
+                statusOfCommand.setText(succeedText);
+                break;
+            case STARTED:
+            case ITEM_BEING_CARRIED:
+                succeedText = "The status of your retrival request for" +
+                        item.getName() + " is 'Started'. A pinto is " +
+                        "working on it as we speak," +
+                        " so you should have it soon.";
+                statusOfCommand.setText(succeedText);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Status");
+        }
+    }
+
+    /**
+     * Cancels the item retrieval
+     * @param cmd the Command
+     */
+    public void performCancelGetItem(Command cmd) {
+
     }
 
     /**

@@ -7,4 +7,5 @@ consolebuild/*
 .metadata/*
 pintosim/.classpath
 pintosim/.project
+pintosim/bin
 dynamic-output.txt

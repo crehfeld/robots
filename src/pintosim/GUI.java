@@ -20,7 +20,6 @@ public class GUI implements ActionListener, FocusListener {
     private Command command;
     private EnviornmentMap map;
     private PintoManager pintoManager;
-    private Command potentialGetItemCancelationCommand;
 
     // Item on the map
     private String name;
@@ -30,9 +29,10 @@ public class GUI implements ActionListener, FocusListener {
 
     /**
      * Constructs a GUI object.
+     *
      * @param pintomanager manages pintos
-     * @param map the environment map
-     * @param command a command
+     * @param map          the environment map
+     * @param command      a command
      */
     public GUI(/*PintoManager pintomanager, EnviornmentMap map, Command command*/) {
 
@@ -122,7 +122,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                    name = itemName.getText();
+                name = itemName.getText();
             }
         });
         // Location button
@@ -135,10 +135,9 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    // Work in progress: Actually add the item to the map, if
-                    // possible.
-                    JOptionPane.showMessageDialog(frame, name + " has been noted at " +
-                            x + " " + y + "!");
+                    statusOfCommand.setText("Working...");
+                    command = new Command(Command.Type.ADD_ITEM, name, x, y);
+                    performAddItem(command);
                 }
                 // Clear all text fields after user is done entering
                 xLoc.setText("");
@@ -162,7 +161,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                    name = getItemField.getText();
+                name = getItemField.getText();
             }
         });
         // Get item button
@@ -209,8 +208,7 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (statusNameField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
+                } else {
                     // Work in progress:
                     // Check status here and then show this dialog:
                     JOptionPane.showMessageDialog(frame, "Getting status of " + name);
@@ -245,8 +243,7 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (cancelNameField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
+                } else {
                     // Work in progress
                     // Show confirm dialogs if Pinto already has the item
                     // or this message dialog if the pinto
@@ -290,8 +287,7 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (helpArea.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No query entered!");
-                }
-                else {
+                } else {
                     // Send to help desk.
                     JOptionPane.showMessageDialog(frame, "Your query has been" +
                             " sent to the help desk! Someone will be" +
@@ -380,5 +376,38 @@ public class GUI implements ActionListener, FocusListener {
     @Override
     public void focusLost(FocusEvent focusEvent) {
         // Method is overridden whenever needed.
+    }
+
+    /**
+     * Adds an item to the environment map.
+     * @param cmd the addItem command
+     */
+    public void performAddItem(Command cmd) {
+        if (!map.withinBoundaries(cmd.getX(), cmd.getY())) {
+            String errorText = "I can't add the " + cmd.getItemName() +
+                    " there, the location ("+ x + ","  + y + ")" +
+                    " is outside of the bounds (" + map.getHeight() +
+                    "," + map.getWidth() + ").";
+            statusOfCommand.setText(errorText);
+        }
+        if (map.isLocationWalkable(cmd.getX(), cmd.getY())) {
+            String errorText = "I can't add the " + cmd.getItemName() +
+                    " there, the location (" + cmd.getX() + "," +
+                    cmd.getY() + ") is occupied by something else.";
+            statusOfCommand.setText(errorText);
+        }
+        else {
+            Item item = map.getItemByName(cmd.getItemName());
+            if (item != null) {
+                String errorText = "Can't add the item " + name +
+                        ". It already exists in the system at (" +
+                         cmd.getX() + "," + cmd.getY() + ").";
+            }
+
+            map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
+            String succeedText = cmd.getItemName() + " recorded. I can now" +
+                    "retrieve it anytime you want.";
+            statusOfCommand.setText(succeedText);
+        }
     }
 }

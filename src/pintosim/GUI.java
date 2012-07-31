@@ -3,6 +3,7 @@ package pintosim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 /**
  * Provides a graphical front end to PintoSim.
@@ -133,8 +134,7 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (itemName.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
+                } else {
                     statusOfCommand.setText("Working...");
                     command = new Command(Command.Type.ADD_ITEM, name, x, y);
                     performAddItem(command);
@@ -172,11 +172,8 @@ public class GUI implements ActionListener, FocusListener {
                 if (getItemField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    // first check if the item is valid and then,
-                    // show this dialog if Pintos are available:
-                    // if not, show another dialog. Work in progress still.
-                    JOptionPane.showMessageDialog(frame, "Pintos have been " +
-                            "dispatched to get " + name + "!");
+                    command = new Command(Command.Type.GET_ITEM);
+                    performGetItem(command);
                     // Clear out values
                     getItemField.setText("");
                 }
@@ -289,9 +286,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No query entered!");
                 } else {
                     // Send to help desk.
-                    JOptionPane.showMessageDialog(frame, "Your query has been" +
-                            " sent to the help desk! Someone will be" +
-                            " dispatched shortly.");
+                    performHelpDesk();
                     // Clear all fields
                     helpArea.setText("");
                 }
@@ -380,34 +375,83 @@ public class GUI implements ActionListener, FocusListener {
 
     /**
      * Adds an item to the environment map.
+     *
      * @param cmd the addItem command
      */
     public void performAddItem(Command cmd) {
+        String errorText = "";
+        String succeedText = "";
         if (!map.withinBoundaries(cmd.getX(), cmd.getY())) {
-            String errorText = "I can't add the " + cmd.getItemName() +
-                    " there, the location ("+ x + ","  + y + ")" +
+            errorText = "I can't add the " + cmd.getItemName() +
+                    " there, the location (" + x + "," + y + ")" +
                     " is outside of the bounds (" + map.getHeight() +
                     "," + map.getWidth() + ").";
             statusOfCommand.setText(errorText);
         }
         if (map.isLocationWalkable(cmd.getX(), cmd.getY())) {
-            String errorText = "I can't add the " + cmd.getItemName() +
+            errorText = "I can't add the " + cmd.getItemName() +
                     " there, the location (" + cmd.getX() + "," +
                     cmd.getY() + ") is occupied by something else.";
             statusOfCommand.setText(errorText);
-        }
-        else {
+        } else {
             Item item = map.getItemByName(cmd.getItemName());
             if (item != null) {
-                String errorText = "Can't add the item " + name +
+                errorText = "Can't add the item " + name +
                         ". It already exists in the system at (" +
-                         cmd.getX() + "," + cmd.getY() + ").";
+                        cmd.getX() + "," + cmd.getY() + ").";
+                statusOfCommand.setText(errorText);
             }
 
             map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
-            String succeedText = cmd.getItemName() + " recorded. I can now" +
-                    "retrieve it anytime you want.";
+            succeedText = cmd.getItemName() + " recorded. I can now" +
+                    " retrieve it anytime you want.";
             statusOfCommand.setText(succeedText);
         }
+    }
+
+    /**
+     * Gets an item for the user
+     * @param cmd the getItem command
+     */
+    public void performGetItem(final Command cmd) {
+        String errorText = "";
+        String succeedText = "";
+        final Item item = map.getItemByName((cmd.getItemName()));
+
+        if (item == null) {
+            errorText = "I don't know where " + name +
+                    " is. You need to add the item first.";
+            statusOfCommand.setText(errorText);
+        }
+        if (pintoManager.uncompletedTaskExistsFor(item)) {
+            errorText = "You already requested that I bring " +
+                    cmd.getItemName() + " to you. You can't request the same" +
+                    " item again.";
+            statusOfCommand.setText(errorText);
+        } else {
+            if (pintoManager.canImmediatelyFulfillATask()) {
+                succeedText = "Okay I will get " + cmd.getItemName() +
+                        " right now. Please wait a moment.";
+                statusOfCommand.setText(succeedText);
+            } else {
+                errorText = "All pintos are busy right now, but I will " +
+                        "get " + cmd.getItemName() + " as soon as possible.";
+                statusOfCommand.setText(errorText);
+            }
+            cmd.setGetItemCallback(new GetItemCallback() {
+                @Override
+                public void onComplete(List<Point> path) {
+                    statusOfCommand.setText("Here is your " + cmd.getItemName());
+                }
+            });
+            pintoManager.addCommand(cmd);
+        }
+    }
+
+    /**
+     * Sends the user's help request to the help desk.
+     */
+    public void performHelpDesk() {
+        statusOfCommand.setText("Okay, your message was sent to the Help Desk.");
     }
 }

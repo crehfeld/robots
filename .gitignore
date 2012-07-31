@@ -5,4 +5,6 @@ out/*
 nbproject/*
 consolebuild/*
 .metadata/*
+pintosim/.classpath
+pintosim/.project
 dynamic-output.txt

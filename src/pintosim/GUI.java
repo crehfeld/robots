@@ -19,6 +19,7 @@ public class GUI implements ActionListener, FocusListener {
     // Backend objects
     private CommandParser interpreter;
     private Command command;
+    private Command potentialGetItemCancelationCommand;
     private EnviornmentMap map;
     private PintoManager pintoManager;
 
@@ -35,14 +36,7 @@ public class GUI implements ActionListener, FocusListener {
      * @param map          the environment map
      * @param command      a command
      */
-    public GUI(/*PintoManager pintomanager, EnviornmentMap map, Command command*/) {
-
-        // @Note: Make the GUI work with the rest of the system:
-
-        /*
-        pintomanager = this.pintoManager;
-        map = this.map;
-        command = this.command; */
+    public GUI(/*PintoManager pintomanager, EnviornmentMap map, final Command command*/) {
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -356,10 +350,6 @@ public class GUI implements ActionListener, FocusListener {
         // Add more actions and menu items if necessary.
     }
 
-    public static void main(String[] args) {
-        new GUI();
-    }
-
     @Override
     public void focusGained(FocusEvent focusEvent) {
         // Listen for input.
@@ -496,7 +486,56 @@ public class GUI implements ActionListener, FocusListener {
      * @param cmd the Command
      */
     public void performCancelGetItem(Command cmd) {
-
+    	Item item = map.getItemByName(cmd.getItemName());
+    	String errorText = "";
+    	if (item == null) {
+    		errorText = "I never knew where " + cmd.getItemName() +
+    				" was, so it's not possible that I am retrieving" +
+    				" it for you.";
+    		statusOfCommand.setText(errorText);
+    	}
+    	if (pintoManager.uncompletedTaskExistsFor(item)) {
+    		if (pintoManager.isItemBeingCarried(item)) {
+    			JOptionPane.showConfirmDialog(frame, "A Pinto is carrying" +
+    					" the item now. The item will be left on the " +
+    					"ground. Do you want to cancel it?");
+    			// Work in progress
+    			// Add action Listener here.
+    			// Also set potentialGetItemCancelation to null depending on the user's answer.
+    		}
+    		else {
+    			statusOfCommand.setText("Okay, it's canceled.");
+;    		}
+    	}
+    	if (pintoManager.completedTaskExistsFor(item)) {
+    		errorText = "I already completed the request for " +
+    				item.getName() + " so it's too late to cancel.";
+    		statusOfCommand.setText("errorText");
+    	}
+    	errorText = "You never requested that I retrieve " +
+    			item.getName() + " for you, so there is nothing" +
+    					" to cancel.";
+    	statusOfCommand.setText(errorText);
+    }
+    
+    public void performConfirmedCancelGetItem(Command cmd) {
+    	String notice = "";
+    	if (potentialGetItemCancelationCommand == null) {
+    		return;
+    	}
+    	Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
+    	
+    	if (cmd.getConfirmation() == true) {
+    		notice = "Okay, I will leave it on the ground at (" +
+    				item.getX() + "," + item.getY() + ").";
+    		statusOfCommand.setText(notice);
+     	}
+    	else {
+    		notice = "Okay you will have the item soon.";
+    		statusOfCommand.setText(notice);
+    		pintoManager.unPauseTask(item);
+    	}
+    	potentialGetItemCancelationCommand = null;
     }
 
     /**
@@ -504,5 +543,9 @@ public class GUI implements ActionListener, FocusListener {
      */
     public void performHelpDesk() {
         statusOfCommand.setText("Okay, your message was sent to the Help Desk.");
+    }
+    
+    public static void main(String[] args) {
+    	new GUI();
     }
 }

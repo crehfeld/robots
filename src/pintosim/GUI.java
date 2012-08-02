@@ -17,11 +17,10 @@ public class GUI implements ActionListener, FocusListener {
     private JLabel statusOfCommand = new JLabel("");
 
     // Backend objects
-    private CommandParser interpreter;
-    private Command command;
+    private static EnviornmentMap map;
+    private static PintoManager pintoManager;
+    private static Command command;
     private Command potentialGetItemCancelationCommand;
-    private EnviornmentMap map;
-    private PintoManager pintoManager;
 
     // Item on the map
     private String name;
@@ -36,7 +35,11 @@ public class GUI implements ActionListener, FocusListener {
      * @param map          the environment map
      * @param command      a command
      */
-    public GUI(/*PintoManager pintomanager, EnviornmentMap map, final Command command*/) {
+    public GUI(PintoManager pintoManager, EnviornmentMap map, Command command) {
+    	
+    	this.pintoManager = pintoManager;
+    	this.map = map;
+    	this.command = command;
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -130,8 +133,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
                     statusOfCommand.setText("Working...");
-                    command = new Command(Command.Type.ADD_ITEM, name, x, y);
-                    performAddItem(command);
+                    performAddItem(new Command(Command.Type.ADD_ITEM, name, x, y));
                 }
                 // Clear all text fields after user is done entering
                 xLoc.setText("");
@@ -166,8 +168,7 @@ public class GUI implements ActionListener, FocusListener {
                 if (getItemField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    command = new Command(Command.Type.GET_ITEM);
-                    performGetItem(command);
+                    performGetItem(new Command(Command.Type.GET_ITEM));
                     // Clear out values
                     getItemField.setText("");
                 }
@@ -202,8 +203,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    command = new Command(Command.Type.GET_ITEM_STATUS);
-                    performGetItemStatus(command);
+                    performGetItemStatus(new Command(Command.Type.GET_ITEM_STATUS));
                     // Clear out fields
                     statusNameField.setText("");
                 }
@@ -237,8 +237,7 @@ public class GUI implements ActionListener, FocusListener {
                     statusOfCommand.setText("No name entered!");
                 }
                 else {
-                    command = new Command(Command.Type.CANCEL_GET_ITEM);
-                    performCancelGetItem(command);
+                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM));
                     cancelNameField.setText("");
                 }
             }
@@ -546,6 +545,6 @@ public class GUI implements ActionListener, FocusListener {
     }
     
     public static void main(String[] args) {
-    	new GUI();
+    	new GUI(pintoManager, map, command);
     }
 }

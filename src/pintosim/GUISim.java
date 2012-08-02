@@ -26,6 +26,7 @@ public class GUISim {
 		PintoManager pintoManager = new PintoManager(map);
 		PathFinder pathFinder = new DijkstraPathFinder(map);
 		
+		// Add pintos
         List<Pinto> pintos = new ArrayList<Pinto>();
         for (Point pintoLocation : mf.getPintoLocations()) {
             Pinto pinto = new Pinto(pintoLocation, map, pintoManager, pathFinder);
@@ -43,6 +44,6 @@ public class GUISim {
         }
         map.trackObject(new Person(mf.getPersonLocation()));
 		
-        GUI gui = new GUI(pintoManager, map);
+        new GUI(pintoManager, map);
 	}
 }

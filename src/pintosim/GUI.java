@@ -134,7 +134,6 @@ public class GUI implements ActionListener, FocusListener {
                 if (itemName.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    statusOfCommand.setText("Working...");
                     performAddItem(new Command(Command.Type.ADD_ITEM, name, x, y));
                 }
                 // Clear all text fields after user is done entering
@@ -286,7 +285,6 @@ public class GUI implements ActionListener, FocusListener {
         });
 
         /* Create a commandStatus panel to notify the user if a command finishes */
-        // Work in progress for now.
         JPanel commandStatus = new JPanel(new FlowLayout());
         //commandStatus.setBorder(BorderFactory.createTitledBorder(" Status of commands "));
         commandStatus.setPreferredSize(new Dimension(1070, 25));
@@ -401,7 +399,7 @@ public class GUI implements ActionListener, FocusListener {
      * Gets an item for the user
      * @param cmd the getItem command
      */
-    public void performGetItem(final Command cmd) {
+    public void performGetItem(Command cmd) {
         String errorText = "";
         String succeedText = "";
         final Item item = map.getItemByName((cmd.getItemName()));
@@ -429,7 +427,7 @@ public class GUI implements ActionListener, FocusListener {
             cmd.setGetItemCallback(new GetItemCallback() {
                 @Override
                 public void onComplete(List<Point> path) {
-                    statusOfCommand.setText("Here is your " + cmd.getItemName());
+                    statusOfCommand.setText("Here is your " + item.getName());
                 }
             });
             pintoManager.addCommand(cmd);

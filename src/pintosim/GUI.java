@@ -17,29 +17,27 @@ public class GUI implements ActionListener, FocusListener {
     private JLabel statusOfCommand = new JLabel("");
 
     // Backend objects
-    private static EnviornmentMap map;
-    private static PintoManager pintoManager;
-    private static Command command;
+    private EnviornmentMap map;
+    private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
 
     // Item on the map
     private String name;
     private int x;
     private int y;
+    
     private String query;
 
     /**
      * Constructs a GUI object.
-     *
      * @param pintomanager manages pintos
      * @param map          the environment map
      * @param command      a command
      */
-    public GUI(PintoManager pintoManager, EnviornmentMap map, Command command) {
+    public GUI(PintoManager pintoManager, EnviornmentMap map) {
     	
     	this.pintoManager = pintoManager;
     	this.map = map;
-    	this.command = command;
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -60,6 +58,10 @@ public class GUI implements ActionListener, FocusListener {
         locationPanel.setPreferredSize(new Dimension(200, 130));
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
+        
+        if (pintoManager == null && map == null) {
+        	JOptionPane.showMessageDialog(frame, "PintoManager and Map is null!");
+        }
 
         final JTextField xLoc = new JTextField("", 3);
         // Get the x location
@@ -247,7 +249,6 @@ public class GUI implements ActionListener, FocusListener {
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
         helpPanel.setPreferredSize(new Dimension(250, 130));
-
         final JTextArea helpArea = new JTextArea("");
         helpArea.setBorder(BorderFactory.createTitledBorder(""));
         final JScrollPane helpScrollPane = new JScrollPane(helpArea);
@@ -256,6 +257,7 @@ public class GUI implements ActionListener, FocusListener {
         helpArea.setEditable(true);
         helpArea.setPreferredSize(new Dimension(220, 60));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
+        // Help Area listener
         helpArea.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -517,6 +519,10 @@ public class GUI implements ActionListener, FocusListener {
     	statusOfCommand.setText(errorText);
     }
     
+    /**
+     * Cancels the items and the Pinto leaves it at the ground.
+     * @param cmd the cancel command 
+     */
     public void performConfirmedCancelGetItem(Command cmd) {
     	String notice = "";
     	if (potentialGetItemCancelationCommand == null) {
@@ -542,9 +548,5 @@ public class GUI implements ActionListener, FocusListener {
      */
     public void performHelpDesk() {
         statusOfCommand.setText("Okay, your message was sent to the Help Desk.");
-    }
-    
-    public static void main(String[] args) {
-    	new GUI(pintoManager, map, command);
     }
 }

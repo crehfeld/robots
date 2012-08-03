@@ -141,6 +141,7 @@ public class GUI implements ActionListener {
 
         // Get item button
         JButton getItemButton = new JButton("Get Item");
+        JLabel getItemHint = new JLabel("...or click the item");
         getItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -153,8 +154,6 @@ public class GUI implements ActionListener {
                 }
             }
         });
-
-        JLabel getItemHint = new JLabel("...Or click the item");
 
         /* Get Status Panel */
         JPanel statusPanel = new JPanel(new FlowLayout());

@@ -19,21 +19,17 @@ public class GUI implements ActionListener {
     // Backend objects
     private EnviornmentMap map;
     private PintoManager pintoManager;
-    private Command potentialGetItemCancelationCommand;
 
     // Item on the map
-    private String name;
     private int x;
     private int y;
-
-    private String query;
 
     /**
      * Constructs a GUI object.
      *
-     * @param pintomanager manages pintos
+     * @param pintoManager manages pintos
      * @param map          the environment map
-     * @param command      a command
+     * @param animPanel    the animation panel
      */
     public GUI(PintoManager pintoManager, EnviornmentMap map, AnimPanel animPanel) {
 
@@ -181,32 +177,12 @@ public class GUI implements ActionListener {
         helpArea.setPreferredSize(new Dimension(220, 60));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
 
-        // Help Area listener
-        helpArea.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                query = helpArea.getText();
-            }
-        });
-
         // Help button
         JButton helpButton = new JButton("Send query to Help Desk");
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (helpArea.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No query entered!");
-                } else {
-                    // Send to help desk.
-                    performHelpDesk();
-                    // Clear all fields
-                    helpArea.setText("");
-                }
+                performHelpDesk(helpArea.getText());
             }
         });
 
@@ -441,9 +417,11 @@ public class GUI implements ActionListener {
 
     /**
      * Cancels an item retrieval.
+     *
      * @param cmd the cancelItem command
      */
     private void performCancelGetItem(Command cmd) {
+        Command potentialGetItemCancelationCommand;
         Item item = map.getItemByName(cmd.getItemName());
         int potentialCancelation = 0;
         if (item == null) {
@@ -500,7 +478,11 @@ public class GUI implements ActionListener {
     /**
      * Sends the user's help request to the help desk.
      */
-    public void performHelpDesk() {
-        statusOfCommand.setText("Okay, your message was sent to the Help Desk.");
+    public void performHelpDesk(final String query) {
+        if (query.length() == 0) {
+            display("No query entered!");
+        } else {
+            display("Okay, your message was sent to the Help Desk.");
+        }
     }
 }

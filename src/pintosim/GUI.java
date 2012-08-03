@@ -74,11 +74,13 @@ public class GUI implements ActionListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
                     try {
-                        x = Integer.parseInt(xLoc.getText());
-                        y = Integer.parseInt(yLoc.getText());
+                        x = Math.abs(Integer.parseInt(xLoc.getText()));
+                        y = Math.abs(Integer.parseInt(yLoc.getText()));
                     } catch (NumberFormatException ex) {
                         statusOfCommand.setText("Error: (" + xLoc.getText()
                                 + "," + yLoc.getText() + ") is not a valid location.");
+                        xLoc.setText(""); yLoc.setText(""); itemName.setText("");
+                        return;
                     }
                     performAddItem(new Command(Command.Type.ADD_ITEM, itemName.getText(), x, y));
                 }
@@ -131,7 +133,9 @@ public class GUI implements ActionListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    performGetItemStatus(new Command(Command.Type.GET_ITEM_STATUS, statusNameField.getText()));
+                    performGetItemStatus(new Command(
+                            Command.Type.GET_ITEM_STATUS,
+                            statusNameField.getText()));
                     // Clear out fields
                     statusNameField.setText("");
                 }
@@ -320,7 +324,6 @@ public class GUI implements ActionListener {
             ));
             return;
         }
-
         map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
         display(String.format(
                 "%s recorded. I can now retrieve it for you anytime you want."

@@ -28,6 +28,7 @@ public class EnviornmentMap implements LocationChangeListener {
     private int height = 0;
     private MapFeatures mapFeatures;
     private List<PathFinder> pathFinders = new ArrayList<PathFinder>();
+    private List<ItemTrackedListener> itemTrackedListeners = new ArrayList<ItemTrackedListener>();
 
     /**
      * All tracked objects. We store this separate location because when
@@ -164,6 +165,7 @@ public class EnviornmentMap implements LocationChangeListener {
         if (!trackedItems.containsKey(name)) {
             trackedItems.put(name, item);
             item.addLocationChangeListeners(this);
+            notifyItemTrackedListeners(item);
         }
     }
 
@@ -184,7 +186,15 @@ public class EnviornmentMap implements LocationChangeListener {
         pathFinders.add(pathFinder);
     }
     
+    public void addItemTrackedListener(ItemTrackedListener listener) {
+        itemTrackedListeners.add(listener);
+    }
 
+    private void notifyItemTrackedListeners(Item item) {
+        for (ItemTrackedListener listener : itemTrackedListeners) {
+            listener.itemAdded(item);
+        }
+    }
 
 
 

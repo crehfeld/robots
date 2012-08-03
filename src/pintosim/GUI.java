@@ -283,34 +283,49 @@ public class GUI implements ActionListener {
      * @param cmd the addItem command
      */
     public void performAddItem(Command cmd) {
-        String errorText = "";
-        String succeedText = "";
         if (!map.withinBoundaries(cmd.getX(), cmd.getY())) {
-            errorText = "I can't add the " + cmd.getItemName() +
-                    " there, the location (" + x + "," + y + ")" +
-                    " is outside of the bounds (" + map.getHeight() +
-                    "," + map.getWidth() + ").";
-            statusOfCommand.setText(errorText);
+            display(String.format(
+                    "I can't add the %s there," +
+                            " the location(%d, %d) is" +
+                            " outside of bounds(%d, %d)."
+                    , cmd.getItemName()
+                    , cmd.getX()
+                    , cmd.getY()
+                    , map.getWidth()
+                    , map.getHeight()
+            ));
+            return;
         }
-        if (map.isLocationWalkable(cmd.getX(), cmd.getY())) {
-            errorText = "I can't add the " + cmd.getItemName() +
-                    " there, the location (" + cmd.getX() + "," +
-                    cmd.getY() + ") is occupied by something else.";
-            statusOfCommand.setText(errorText);
-        } else {
-            Item item = map.getItemByName(cmd.getItemName());
-            if (item != null) {
-                errorText = "Can't add the item " + name +
-                        ". It already exists in the system at (" +
-                        cmd.getX() + "," + cmd.getY() + ").";
-                statusOfCommand.setText(errorText);
-            }
+        if (!map.isLocationWalkable(cmd.getX(), cmd.getY())) {
+            display(String.format(
+                    "I can't add the %s there," +
+                            " the location(%d, %d) is " +
+                            "occupied by something else."
+                    , cmd.getItemName()
+                    , cmd.getX()
+                    , cmd.getY()
+            ));
+            return;
+        }
 
-            map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
-            succeedText = cmd.getItemName() + " recorded. I can now" +
-                    " retrieve it anytime you want.";
-            statusOfCommand.setText(succeedText);
+        Item item = map.getItemByName(cmd.getItemName());
+        if (item != null) {
+            display(String.format(
+                    "Cant add the item %s." +
+                            " It already exists" +
+                            " in the system at (%d, %d)."
+                    , item.getName()
+                    , item.getX()
+                    , item.getY()
+            ));
+            return;
         }
+
+        map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
+        display(String.format(
+                "%s recorded. I can now retrieve it for you anytime you want."
+                , cmd.getItemName()
+        ));
     }
 
     /**
@@ -321,7 +336,8 @@ public class GUI implements ActionListener {
         final Item item = map.getItemByName(cmd.getItemName());
         if (item == null) {
             display(String.format(
-                    "I don't know where %s is. You need to first add the item."
+                    "I don't know where %s is." +
+                            " You need to first add the item."
                     , cmd.getItemName()
             ));
 
@@ -369,7 +385,6 @@ public class GUI implements ActionListener {
                             " You need to first tell me where that item is."
                     , cmd.getItemName()
             ));
-
             return;
         }
         if (!pintoManager.uncompletedTaskExistsFor(item) &&
@@ -379,13 +394,14 @@ public class GUI implements ActionListener {
                             " so there is no status to report."
                     , item.getName()
             ));
-
             return;
         }
         switch (pintoManager.getTaskStatus(item)) {
             case COMPLETE:
                 display(String.format(
-                        "The status of your retrieval request for %s is 'Complete'. I already delivered it."
+                        "The status of your retrieval request for" +
+                                " %s is 'Complete'." +
+                                " I already delivered it."
                         , item.getName()
                 ));
                 break;
@@ -430,11 +446,7 @@ public class GUI implements ActionListener {
         if (pintoManager.uncompletedTaskExistsFor(item)) {
             if (pintoManager.isItemBeingCarried(item)) {
 
-
-                // Work in progress. Add Action listener here.
-
-
-
+                //!!!NOTE!!!: Work in progress. Need to add Action listener here.
 
                 potentialGetItemCancelationCommand = cmd;
                 pintoManager.pauseTaskIfRunning(item);
@@ -469,7 +481,8 @@ public class GUI implements ActionListener {
             return;
         }
 
-        Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
+        Item item = map.getItemByName(
+                potentialGetItemCancelationCommand.getItemName());
         if (cmd.getConfirmation() == true) {
             display(String.format(
                     "Ok, I will leave it on the ground at (%d, %d)."
@@ -483,7 +496,6 @@ public class GUI implements ActionListener {
         }
         potentialGetItemCancelationCommand = null;
     }
-
 
     /**
      * Sends the user's help request to the help desk.

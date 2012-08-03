@@ -1,128 +1,146 @@
 package pintosim;
 
 import java.awt.Image;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
-import java.io.IOException;
 import java.awt.Point;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.io.FileReader;
+import java.util.*;
 
 public class GUISim {
-	private static final String IMAGE_MAP_FILENAME = "maps/30x30-lots-of-items.png";	
-        private static final String GRAPHICS_PACKAGE_DIR = "graphics/standard/";
-        private static final int    CANVAS_RENDERING_FREQUENCY_MS = 10;
-        private static final int    GAME_UPDATE_FREQUENCY_MS = 80;
-        
+    private static final String CONFIG_FILENAME = "config.properties";
+    
 	public static void main(String[] args) {
-		showGUIInterface();
+        try {
+            Properties props = new Properties();
+            props.load(new FileReader(new File(CONFIG_FILENAME)));
+            showGUIInterface(props);
+        } catch (Exception e) {
+            System.out.println("error initializing");
+            e.printStackTrace();
+        }
 	}
+    
+    
+    
+    
+    
 	
-	public static void showGUIInterface() {
-            MapFeatures mapFeatures;
-            try {
-                mapFeatures = new ImageMapAnalyzer(new File(IMAGE_MAP_FILENAME));
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
+	public static void showGUIInterface(Properties props) throws Exception {
+        final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
+        final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
+        final EnvironmentMap map = new EnvironmentMap(mapFeatures);
+        final PintoManager pintoManager = new PintoManager(map);
+        final PathFinder pathFinder = new DijkstraPathFinder(map);
+
+        final int tileSize = graphicsPackage.getTileSize();
+        final int ANIMATION_DURATION = Integer.parseInt(props.getProperty("GameUpdateFrequencyMS"));
+        final int GAME_UPDATE_FREQUENCY_MS = ANIMATION_DURATION;
+
+        final AnimPanel animPanel = new AnimPanel(
+              map.getWidth() * tileSize
+            , map.getHeight() * tileSize
+            , Integer.parseInt(props.getProperty("CanvasRenderingFrequencyMS"))
+        );
+
+        animPanel.addPaintable(new FramesPerSecond());
+
+
+
+        // create sprites for the walls and floor
+        // we will every single space with either a wall or floor graphic
+        // other things get just painted on top of these
+        Image floorGraphic = graphicsPackage.getFloorImage();
+        Image wallGraphic = graphicsPackage.getWallImage();
+        boolean[][] matrix = mapFeatures.getFreeSpaceMatrix();
+        for (int i=0; i < matrix.length; i++) {
+            for (int j=0; j<matrix[i].length; j++) {
+                animPanel.addPaintable(new Sprite(
+                    matrix[i][j] ? floorGraphic : wallGraphic
+                    , graphicsPackage.translateCoords(new Point(i, j))
+                    , 0
+                ));
             }
+        }
 
-            EnvironmentMap map = new EnvironmentMap(mapFeatures);
-            PintoManager pintoManager = new PintoManager(map);
-            PathFinder pathFinder = new DijkstraPathFinder(map);
 
-            Image pintoGraphic = null;
-            Image floorGraphic = null;
-            Image wallGraphic = null;
-            Image itemGraphic = null;
-            Image dockingGraphic = null;
-            Image personGraphic = null;
-            try {
-                pintoGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "pinto.png"));
-                floorGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "floor.png"));
-                wallGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "wall.png"));
-                itemGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "item.png"));
-                dockingGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "docking.png"));
-                personGraphic = ImageIO.read(new File(GRAPHICS_PACKAGE_DIR + "person.png"));
+        final Tween tween = new EaseLinear();
+        // this listener gets called when we add a new item to the enviornmentMap.
 
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        //add pintos
+        for (Point pintoLocation : mapFeatures.getPintoLocations()) {
+            Pinto pinto = new Pinto(pintoLocation, map, pintoManager, pathFinder);
+            map.trackObject(pinto);
+            pintoManager.addPinto(pinto);
+            Point initialLocation = graphicsPackage.translateCoords(pintoLocation);
+            MovingSprite sprite = new MovingSprite(graphicsPackage.getPintoImage(), initialLocation, 10);
+            pinto.addLocationChangeListeners(new TransitionCreator(
+                    ANIMATION_DURATION, tileSize, sprite, tween));
+            animPanel.addPaintable(sprite);
+
+        }
+
+
+        // add items.
+        // the image map defines how many items exist at the start(and the item locations)
+        // we try to use named items which have specific graphics to fill up the slots. 
+        // any remaining slots get the default item grpahic, and a sequential name like a1 a2 a3
+
+        Iterator<Map.Entry<String, Image>> namedItems = graphicsPackage.getNamedExtraImages().entrySet().iterator();
+        int itemSerial = 1;
+        for (Point itemLocation : mapFeatures.getItemLocations()) {
+            String name;
+            Image img;
+            
+            if (namedItems.hasNext()) {
+                Map.Entry<String, Image> entry = namedItems.next();
+                name = entry.getKey().split("\\.")[0];
+                img = entry.getValue();
+            } else {
+                name = "a" + itemSerial++;
+                img = graphicsPackage.getItemImage();
             }
+            
+            Item item = new Item(name, itemLocation.x, itemLocation.y);
+            map.trackItem(item);
+            Point initialLocation = graphicsPackage.translateCoords(itemLocation);
+            MovingSprite sprite = new MovingSprite(img, initialLocation, 5);
+            item.addLocationChangeListeners(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
+            animPanel.addPaintable(sprite);
+        }
+        
 
-            final AnimPanel animPanel = new AnimPanel(
-                    map.getWidth() *20, map.getHeight()*20,
-                    CANVAS_RENDERING_FREQUENCY_MS);
-            animPanel.addPaintable(new FramesPerSecond());
-
-            final int tileSize = 20;
-            // create sprites for the walls and floor
-            boolean[][] matrix = mapFeatures.getFreeSpaceMatrix();
-            for (int i=0; i < matrix.length; i++) {
-                for (int j=0; j<matrix[i].length; j++) {
-                    animPanel.addPaintable(new Sprite(
-                        matrix[i][j] ? floorGraphic : wallGraphic
-                      , new Point(i * tileSize, j * tileSize)
-                      , 0
-                    ));
-                }
-            }
-
-            final Tween tween = new EaseLinear();
-            final Image graphic = itemGraphic;
-            map.addItemTrackedListener(new ItemTrackedListener() {
-                public void itemAdded(Item item) {
-                    Point initialLocation = new Point(item.getX() * 20, item.getY() * 20);
-                    MovingSprite sprite = new MovingSprite(graphic, initialLocation, 5);
-                    item.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
-                    animPanel.addPaintable(sprite);
-                }
-            });
-
-            //add pintos
-            for (Point pintoLocation : mapFeatures.getPintoLocations()) {
-                Pinto pinto = new Pinto(pintoLocation, map, pintoManager, pathFinder);
-                map.trackObject(pinto);
-                pintoManager.addPinto(pinto);
-
-                Point initialLocation = new Point(pintoLocation.x * 20, pintoLocation.y * 20);
-
-                MovingSprite sprite = new MovingSprite(pintoGraphic, initialLocation, 10);
-                pinto.addLocationChangeListeners(new TransitionCreator(
-                        GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
+        //we add the listener after we manually add items otherwise they get added twice
+        map.addItemTrackedListener(new ItemTrackedListener() {
+            public void itemAdded(Item item) {
+                Point initialLocation = graphicsPackage.translateCoords(new Point(item.getX(), item.getY()));
+                MovingSprite sprite = new MovingSprite(graphicsPackage.getItemImage(), initialLocation, 5);
+                item.addLocationChangeListeners(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
                 animPanel.addPaintable(sprite);
-
             }
+        });
+        
+        
+        
 
-            //add items, naming them a1, a2, a3....
-            int itemSerial = 1;
-            for (Point itemLocation : mapFeatures.getItemLocations()) {
-                String itemName = "a" + itemSerial++;
-                Item item = new Item(itemName, itemLocation.x, itemLocation.y);
-                map.trackItem(item);
+        Point initialLocation = graphicsPackage.translateCoords(mapFeatures.getPintoDockingStationLocation());
+        animPanel.addPaintable(new Sprite(graphicsPackage.getDockingImage(),
+                initialLocation, 5));
+        initialLocation = graphicsPackage.translateCoords(mapFeatures.getPersonLocation());
+        animPanel.addPaintable(new Sprite(graphicsPackage.getPersonImage(),
+                initialLocation, 5));
+
+        map.trackObject(new Person(mapFeatures.getPersonLocation()));
+
+        final PintoManager pm = pintoManager;
+        Timer t = new Timer(true);
+        TimerTask task = new TimerTask() {
+            public void run() {
+                pm.work();
             }
+        };
+        t.scheduleAtFixedRate(task, 0, GAME_UPDATE_FREQUENCY_MS);
 
-            Point initialLocation = mapFeatures.getPintoDockingStationLocation();
-            animPanel.addPaintable(new Sprite(dockingGraphic,
-                    new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
-            initialLocation = mapFeatures.getPersonLocation();
-            animPanel.addPaintable(new Sprite(personGraphic,
-                    new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
-
-            map.trackObject(new Person(mapFeatures.getPersonLocation()));
-
-            final PintoManager pm = pintoManager;
-            Timer t = new Timer(true);
-            TimerTask task = new TimerTask() {
-                public void run() {
-                    pm.work();
-                }
-            };
-            t.scheduleAtFixedRate(task, 0, GAME_UPDATE_FREQUENCY_MS);
-
-            new GUI(pintoManager, map, animPanel);
+        new GUI(pintoManager, map, animPanel);
 	}
 }

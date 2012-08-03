@@ -17,7 +17,7 @@ public class GUI implements ActionListener {
     private JLabel statusOfCommand = new JLabel("");
 
     // Backend objects
-    private EnviornmentMap map;
+    private EnvironmentMap map;
     private PintoManager pintoManager;
 
     // Item on the map
@@ -31,7 +31,7 @@ public class GUI implements ActionListener {
      * @param map          the environment map
      * @param animPanel    the animation panel
      */
-    public GUI(PintoManager pintoManager, EnviornmentMap map, AnimPanel animPanel) {
+    public GUI(PintoManager pintoManager, EnvironmentMap map, AnimPanel animPanel) {
 
         this.pintoManager = pintoManager;
         this.map = map;

@@ -13,13 +13,13 @@ public class DijkstraPathFinder implements PathFinder {
     private Vertex[][] vertices;
     private static final int UNOBSTRUCTED_EDGE_WEIGHT  = 5;
     private static final int   OBSTRUCTED_EDGE_WEIGHT  = 8000;
-    private EnviornmentMap environmentMap;
+    private EnvironmentMap environmentMap;
     
     private boolean[][] freeSpaces;//true means unobstructed
     
     private boolean sourcePathComputed = false;
     
-    public DijkstraPathFinder(EnviornmentMap environmentMap) {
+    public DijkstraPathFinder(EnvironmentMap environmentMap) {
         this.environmentMap = environmentMap;
     }
     
@@ -108,7 +108,7 @@ public class DijkstraPathFinder implements PathFinder {
    
     /**
      * 
-     * these 2 methods could be called by EnviornmentMap when an update occurs
+     * these 2 methods could be called by EnvironmentMap when an update occurs
      * but we dont current do it because we just do a complete teardown+setup
      * for each path calculation
      */

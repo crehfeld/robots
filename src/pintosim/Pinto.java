@@ -24,7 +24,7 @@ public class Pinto extends MovableObject {
     private List<Point> currentPath;
     private PathFinder pathFinder;
     private Item itemBeingCarried;
-    private EnviornmentMap enviornmentMap;
+    private EnvironmentMap EnvironmentMap;
     
     
     
@@ -37,9 +37,9 @@ public class Pinto extends MovableObject {
     
     private PintoState state = PintoState.IDLE;
 
-    public Pinto(Point initialLocation, EnviornmentMap map, PintoManager pintoManager, PathFinder pathFinder) {
+    public Pinto(Point initialLocation, EnvironmentMap map, PintoManager pintoManager, PathFinder pathFinder) {
         super(initialLocation);
-        enviornmentMap = map;
+        EnvironmentMap = map;
         this.pintoManager = pintoManager;
         this.pathFinder = pathFinder;
     }
@@ -47,9 +47,9 @@ public class Pinto extends MovableObject {
 
     public void getItem(Command cmd) {
         command = cmd;
-        Point ds = enviornmentMap.getPintoDockingStationLocation();
-        Point elderly = enviornmentMap.getPersonLocation();
-        Point item = enviornmentMap.getItemLocation(command.getItemName());
+        Point ds = EnvironmentMap.getPintoDockingStationLocation();
+        Point elderly = EnvironmentMap.getPersonLocation();
+        Point item = EnvironmentMap.getItemLocation(command.getItemName());
 
         setDestinations(item, elderly, ds);
         path = new ArrayList<Point>();
@@ -158,14 +158,14 @@ public class Pinto extends MovableObject {
     }
 
     private Point generateNextValidStepTowardsHeading() {
-        if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
+        if (!currentPath.isEmpty() && EnvironmentMap.isLocationWalkable(currentPath.get(0))) {
             return currentPath.remove(0);
         }
         
         //we only reach here if we cant move
         if (!shouldSitStill()) {
             currentPath = getPathTowardsHeading();
-            if (!currentPath.isEmpty() && enviornmentMap.isLocationWalkable(currentPath.get(0))) {
+            if (!currentPath.isEmpty() && EnvironmentMap.isLocationWalkable(currentPath.get(0))) {
                 return currentPath.remove(0);
             }
         }
@@ -191,7 +191,7 @@ public class Pinto extends MovableObject {
     }
     
     private void pickupItem() {
-        itemBeingCarried = enviornmentMap.getItemByName(command.getItemName());
+        itemBeingCarried = EnvironmentMap.getItemByName(command.getItemName());
     }
     
     private void dropItem() {

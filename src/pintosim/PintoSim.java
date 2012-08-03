@@ -58,7 +58,7 @@ public class PintoSim {
             return null;
         }
         
-        EnviornmentMap map = new EnviornmentMap(mapFeatures);
+        EnvironmentMap map = new EnvironmentMap(mapFeatures);
         PintoManager pintoManager = new PintoManager(map);
         PathFinder pathFinder = new DijkstraPathFinder(map);
         
@@ -139,7 +139,7 @@ public class PintoSim {
             return null;
         }
         
-        EnviornmentMap map = new EnviornmentMap(mapFeatures);
+        EnvironmentMap map = new EnvironmentMap(mapFeatures);
         PintoManager pintoManager = new PintoManager(map);
         PathFinder pathFinder = new DijkstraPathFinder(map);
         
@@ -275,7 +275,7 @@ public class PintoSim {
     
     
     
-    private static void renderMapToFile(final EnviornmentMap map, String filename) {
+    private static void renderMapToFile(final EnvironmentMap map, String filename) {
         RandomAccessFile tmp = null;
         try {
             tmp = new RandomAccessFile(filename, "rw");
@@ -310,7 +310,7 @@ public class PintoSim {
     
     
     
-    private static void addMouseClickHandler(AnimPanel panel, final UserInterface ui, final EnviornmentMap map) {
+    private static void addMouseClickHandler(AnimPanel panel, final UserInterface ui, final EnvironmentMap map) {
         panel.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evt) {
                 // integer division to get back down to tile coords
@@ -324,10 +324,4 @@ public class PintoSim {
             }
         });
     }
-    
-    
-    
-    
-    
-    
 }

@@ -8,12 +8,12 @@ public class UserInterface {
 
     private PrintStream out;
     private CommandParser interpreter;
-    private EnviornmentMap map;
+    private EnvironmentMap map;
     private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
     private boolean helpDeskMessageInProgress = false;
 
-    public UserInterface(PrintStream output, CommandParser interpreter, EnviornmentMap map, PintoManager pintoManager) {
+    public UserInterface(PrintStream output, CommandParser interpreter, EnvironmentMap map, PintoManager pintoManager) {
         out = output;
         this.interpreter = interpreter;
         this.map = map;

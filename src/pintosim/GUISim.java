@@ -31,13 +31,9 @@ public class GUISim {
                 return;
             }
 
-            EnviornmentMap map = new EnviornmentMap(mapFeatures);
+            EnvironmentMap map = new EnvironmentMap(mapFeatures);
             PintoManager pintoManager = new PintoManager(map);
             PathFinder pathFinder = new DijkstraPathFinder(map);
-
-
-
-
 
             Image pintoGraphic = null;
             Image floorGraphic = null;
@@ -57,10 +53,10 @@ public class GUISim {
                 e.printStackTrace();
             }
 
-            final AnimPanel animPanel = new AnimPanel(map.getWidth() *20, map.getHeight()*20, CANVAS_RENDERING_FREQUENCY_MS);
+            final AnimPanel animPanel = new AnimPanel(
+                    map.getWidth() *20, map.getHeight()*20,
+                    CANVAS_RENDERING_FREQUENCY_MS);
             animPanel.addPaintable(new FramesPerSecond());
-
-
 
             final int tileSize = 20;
             // create sprites for the walls and floor
@@ -75,11 +71,6 @@ public class GUISim {
                 }
             }
 
-
-
-
-
-
             final Tween tween = new EaseLinear();
             final Image graphic = itemGraphic;
             map.addItemTrackedListener(new ItemTrackedListener() {
@@ -91,8 +82,6 @@ public class GUISim {
                 }
             });
 
-
-
             //add pintos
             for (Point pintoLocation : mapFeatures.getPintoLocations()) {
                 Pinto pinto = new Pinto(pintoLocation, map, pintoManager, pathFinder);
@@ -102,14 +91,11 @@ public class GUISim {
                 Point initialLocation = new Point(pintoLocation.x * 20, pintoLocation.y * 20);
 
                 MovingSprite sprite = new MovingSprite(pintoGraphic, initialLocation, 10);
-                pinto.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
+                pinto.addLocationChangeListeners(new TransitionCreator(
+                        GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
                 animPanel.addPaintable(sprite);
 
             }
-
-
-
-
 
             //add items, naming them a1, a2, a3....
             int itemSerial = 1;
@@ -120,12 +106,11 @@ public class GUISim {
             }
 
             Point initialLocation = mapFeatures.getPintoDockingStationLocation();
-            animPanel.addPaintable(new Sprite(dockingGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
+            animPanel.addPaintable(new Sprite(dockingGraphic,
+                    new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
             initialLocation = mapFeatures.getPersonLocation();
-            animPanel.addPaintable(new Sprite(personGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
-
-
-
+            animPanel.addPaintable(new Sprite(personGraphic,
+                    new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
 
             map.trackObject(new Person(mapFeatures.getPersonLocation()));
 

@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Chris
  */
-public class EnviornmentMap implements LocationChangeListener {
+public class EnvironmentMap implements LocationChangeListener {
 
     private class MovableObjectList extends ArrayList<MovableObject> {}
     
@@ -40,7 +40,7 @@ public class EnviornmentMap implements LocationChangeListener {
     // tracked items indexed by their name
     private Map<String, Item> trackedItems = new HashMap<String, Item>();
 
-    public EnviornmentMap(MapFeatures mapFeatures) {
+    public EnvironmentMap(MapFeatures mapFeatures) {
         this.mapFeatures = mapFeatures;
         width = mapFeatures.getWidth();
         height = mapFeatures.getHeight();
@@ -93,9 +93,6 @@ public class EnviornmentMap implements LocationChangeListener {
         }
         return items;
     }
-    
-    
-    
 
     /**
      * A walkable location is a location that isn't a wall, couch, or other such
@@ -306,11 +303,6 @@ public class EnviornmentMap implements LocationChangeListener {
         for (Point pt : path) {
             grid[pt.x][pt.y] = 'O';
         }
-        
-        
-        
-        
-        
         String buf = "";
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -321,8 +313,4 @@ public class EnviornmentMap implements LocationChangeListener {
 
         return buf;
     }
-    
-    
-
-    
 }

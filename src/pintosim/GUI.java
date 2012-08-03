@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Provides a graphical front end to PintoSim
+ *
  * @author PlzSendTheCodes team
  */
 public class GUI implements ActionListener {
@@ -24,19 +25,20 @@ public class GUI implements ActionListener {
     private String name;
     private int x;
     private int y;
-    
+
     private String query;
 
     /**
      * Constructs a GUI object.
+     *
      * @param pintomanager manages pintos
      * @param map          the environment map
      * @param command      a command
      */
     public GUI(PintoManager pintoManager, EnviornmentMap map, AnimPanel animPanel) {
-    	
-    	this.pintoManager = pintoManager;
-    	this.map = map;
+
+        this.pintoManager = pintoManager;
+        this.map = map;
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -79,7 +81,9 @@ public class GUI implements ActionListener {
                     } catch (NumberFormatException ex) {
                         statusOfCommand.setText("Error: (" + xLoc.getText()
                                 + "," + yLoc.getText() + ") is not a valid location.");
-                        xLoc.setText(""); yLoc.setText(""); itemName.setText("");
+                        xLoc.setText("");
+                        yLoc.setText("");
+                        itemName.setText("");
                         return;
                     }
                     performAddItem(new Command(Command.Type.ADD_ITEM, itemName.getText(), x, y));
@@ -131,8 +135,7 @@ public class GUI implements ActionListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (statusNameField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
+                } else {
                     performGetItemStatus(new Command(
                             Command.Type.GET_ITEM_STATUS,
                             statusNameField.getText()));
@@ -158,8 +161,7 @@ public class GUI implements ActionListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (cancelNameField.getText().equals("")) {
                     statusOfCommand.setText("No name entered!");
-                }
-                else {
+                } else {
                     performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
                     cancelNameField.setText("");
                 }
@@ -276,6 +278,7 @@ public class GUI implements ActionListener {
 
     /**
      * Sets the status of command message.
+     *
      * @param str the message to display
      */
     public void display(String str) {
@@ -284,9 +287,10 @@ public class GUI implements ActionListener {
 
     /**
      * Adds an item to the environment map.
+     *
      * @param cmd the addItem command
      */
-    public void performAddItem(Command cmd) {
+    private void performAddItem(Command cmd) {
         if (!map.withinBoundaries(cmd.getX(), cmd.getY())) {
             display(String.format(
                     "I can't add the %s there," +
@@ -333,6 +337,7 @@ public class GUI implements ActionListener {
 
     /**
      * Gets an item for the user
+     *
      * @param cmd the getItem command
      */
     private void performGetItem(final Command cmd) {
@@ -373,7 +378,9 @@ public class GUI implements ActionListener {
                         , cmd.getItemName()
                 ));
             }
-            public void onCancel(Point currentLocation, String itemName) {}
+
+            public void onCancel(Point currentLocation, String itemName) {
+            }
         });
         pintoManager.addCommand(cmd);
     }
@@ -433,11 +440,12 @@ public class GUI implements ActionListener {
     }
 
     /**
-     * Cancels the item retrieval
-     * @param cmd the Command
+     * Cancels an item retrieval.
+     * @param cmd the cancelItem command
      */
     private void performCancelGetItem(Command cmd) {
         Item item = map.getItemByName(cmd.getItemName());
+        int potentialCancelation = 0;
         if (item == null) {
             display(String.format(
                     "I never knew where %s was, " +
@@ -447,12 +455,27 @@ public class GUI implements ActionListener {
             return;
         }
         if (pintoManager.uncompletedTaskExistsFor(item)) {
+
             if (pintoManager.isItemBeingCarried(item)) {
-
-                //!!!NOTE!!!: Work in progress. Need to add Action listener here.
-
-                potentialGetItemCancelationCommand = cmd;
                 pintoManager.pauseTaskIfRunning(item);
+                potentialCancelation = JOptionPane.showConfirmDialog(
+                        frame, "A Pinto is already carrying the item." +
+                        " Do you want it to leave the item on the ground?",
+                        "Item is being carried!", JOptionPane.YES_NO_CANCEL_OPTION);
+
+                if (potentialCancelation == JOptionPane.YES_OPTION) {
+                    potentialGetItemCancelationCommand = cmd;
+                    pintoManager.addCommand(potentialGetItemCancelationCommand);
+                    display(String.format(
+                            "Ok, I will leave %s on the ground at (%d, %d)."
+                            , item.getName()
+                            , item.getX()
+                            , item.getY()
+                    ));
+                } else {
+                    display("Ok, you will have the item soon.");
+                    pintoManager.unPauseTask(item);
+                }
             } else {
                 display("Ok, it's canceled.");
                 pintoManager.addCommand(cmd);
@@ -472,32 +495,6 @@ public class GUI implements ActionListener {
                         " so there is nothing to cancel."
                 , item.getName()
         ));
-    }
-
-
-    /**
-     * Cancels the items and the Pinto leaves it at the ground.
-     * @param cmd the cancel command 
-     */
-    private void performConfirmedCancelGetItem(Command cmd) {
-        if (potentialGetItemCancelationCommand == null) {
-            return;
-        }
-
-        Item item = map.getItemByName(
-                potentialGetItemCancelationCommand.getItemName());
-        if (cmd.getConfirmation() == true) {
-            display(String.format(
-                    "Ok, I will leave it on the ground at (%d, %d)."
-                    , item.getX()
-                    , item.getY()
-            ));
-            pintoManager.addCommand(potentialGetItemCancelationCommand);
-        } else {
-            display("Ok, you will have the item soon.");
-            pintoManager.unPauseTask(item);
-        }
-        potentialGetItemCancelationCommand = null;
     }
 
     /**

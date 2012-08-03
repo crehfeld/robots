@@ -35,6 +35,8 @@ public class GUI implements ActionListener {
 
         this.pintoManager = pintoManager;
         this.map = map;
+        
+        setupMouseListener(animPanel);
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -487,4 +489,40 @@ public class GUI implements ActionListener {
             display("Okay, your message was sent to the Help Desk.");
         }
     }
+    
+    
+    
+    private void setupMouseListener(Component component) {
+        component.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent evt) {
+                // integer division to get back down to tile coords
+                int x = evt.getX() / 20;
+                int y = evt.getY() / 20;
+                for (Item item : map.getItemsAt(x, y)) {
+                    if (evt.isShiftDown()) {
+                        //cancel item
+                        Command cmd = new Command(Command.Type.CANCEL_GET_ITEM, item.getName());
+                        performCancelGetItem(cmd);
+                    } else if (evt.isAltDown()) {
+                        //get item status
+                        Command cmd = new Command(Command.Type.GET_ITEM_STATUS, item.getName());
+                        performGetItemStatus(cmd);
+                    } else {
+                        //get item
+                        Command cmd = new Command(Command.Type.GET_ITEM, item.getName());
+                        performGetItem(cmd);
+                    }
+                    
+                    // important to break, we pick ONE arbitrary item on this tile
+                    // keep in mind the animations are always behind the actual
+                    // item location by up to 1 tile, so clicking moving items
+                    // may not behave perfectly
+                    // click ahead of it, if you can guess the immediate next tile
+                    break;
+                }
+            }
+        });
+    }
+    
+    
 }

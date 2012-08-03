@@ -9,8 +9,6 @@ import java.awt.Point;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class GUISim {
 	private static final String IMAGE_MAP_FILENAME = "maps/30x30-lots-of-items.png";	
@@ -82,7 +80,6 @@ public class GUISim {
             MovingSprite sprite = new MovingSprite(pintoGraphic, initialLocation, 10);
             pinto.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
-
         }
         
         //add items, naming them a1, a2, a3....
@@ -96,22 +93,21 @@ public class GUISim {
             Point initialLocation = new Point(itemLocation.x * 20, itemLocation.y * 20);
             
             MovingSprite sprite = new MovingSprite(itemGraphic, initialLocation, 5);
-            item.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
+            item.addLocationChangeListeners(new TransitionCreator(
+                    GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
-            
         }
         
         Point initialLocation = mapFeatures.getPintoDockingStationLocation();
-
-        animPanel.addPaintable(new Sprite(dockingGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
+        animPanel.addPaintable(new Sprite(dockingGraphic,
+                new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
         
         initialLocation = mapFeatures.getPersonLocation();
-        animPanel.addPaintable(new Sprite(personGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
+        animPanel.addPaintable(new Sprite(personGraphic,
+                new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
 
         animPanel.addPaintable(new FramesPerSecond());
-
         map.trackObject(new Person(mapFeatures.getPersonLocation()));
-
         final PintoManager pm = pintoManager;
         Timer t = new Timer(true);
         TimerTask task = new TimerTask() {

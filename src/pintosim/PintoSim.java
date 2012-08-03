@@ -166,8 +166,11 @@ public class PintoSim {
         }
         
         final AnimPanel animPanel = new AnimPanel(map.getWidth() *20, map.getHeight()*20, CANVAS_RENDERING_FREQUENCY_MS);
-
-        int tileSize = 20;
+        animPanel.addPaintable(new FramesPerSecond());
+        
+        
+        
+        final int tileSize = 20;
         // create sprites for the walls and floor
         boolean[][] matrix = mapFeatures.getFreeSpaceMatrix();
         for (int i=0; i < matrix.length; i++) {
@@ -185,12 +188,20 @@ public class PintoSim {
         
         
         
-        Tween tween = new EaseLinear();
+        final Tween tween = new EaseLinear();
+        final Image graphic = itemGraphic;
+        map.addItemTrackedListener(new ItemTrackedListener() {
+            public void itemAdded(Item item) {
+                Point initialLocation = new Point(item.getX() * 20, item.getY() * 20);
+                MovingSprite sprite = new MovingSprite(graphic, initialLocation, 5);
+                item.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
+                animPanel.addPaintable(sprite);
+            }
+        });
         
         
         
         //add pintos
-        List<Pinto> pintos = new ArrayList<Pinto>();
         for (Point pintoLocation : mapFeatures.getPintoLocations()) {
             Pinto pinto = new Pinto(pintoLocation, map, pintoManager, pathFinder);
             map.trackObject(pinto);
@@ -204,34 +215,24 @@ public class PintoSim {
 
         }
         
+        
+        
+        
+        
         //add items, naming them a1, a2, a3....
-        List<Item> items = new ArrayList<Item>();
         int itemSerial = 1;
         for (Point itemLocation : mapFeatures.getItemLocations()) {
             String itemName = "a" + itemSerial++;
             Item item = new Item(itemName, itemLocation.x, itemLocation.y);
             map.trackItem(item);
-
-            Point initialLocation = new Point(itemLocation.x * 20, itemLocation.y * 20);
-            
-            MovingSprite sprite = new MovingSprite(itemGraphic, initialLocation, 5);
-            item.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
-            animPanel.addPaintable(sprite);
-
-            
         }
         
         Point initialLocation = mapFeatures.getPintoDockingStationLocation();
-
         animPanel.addPaintable(new Sprite(dockingGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
-        
         initialLocation = mapFeatures.getPersonLocation();
         animPanel.addPaintable(new Sprite(personGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
+
         
-        
-        
-        
-        animPanel.addPaintable(new FramesPerSecond());
         
         
         map.trackObject(new Person(mapFeatures.getPersonLocation()));

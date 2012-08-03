@@ -66,7 +66,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (itemName.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     try {
                         x = Math.abs(Integer.parseInt(xLoc.getText()));
@@ -95,7 +95,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (itemName.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     try {
                         x = Math.abs(Integer.parseInt(xLoc.getText()));
@@ -130,7 +130,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (getItemField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     performGetItem(new Command(Command.Type.GET_ITEM, getItemField.getText()));
                     // Clear out values
@@ -146,7 +146,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (getItemField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     performGetItem(new Command(Command.Type.GET_ITEM, getItemField.getText()));
                     // Clear out values
@@ -169,7 +169,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (statusNameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     performGetItemStatus(new Command(
                             Command.Type.GET_ITEM_STATUS,
@@ -186,7 +186,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (statusNameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    display("No name entered!");
                 } else {
                     performGetItemStatus(new Command(
                             Command.Type.GET_ITEM_STATUS,
@@ -211,7 +211,7 @@ public class GUI implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (cancelNameField.getText().equals("")) {
-                    statusOfCommand.setText("No name entered!");
+                    display("No name entered!");
                 } else {
                     performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
                     cancelNameField.setText("");

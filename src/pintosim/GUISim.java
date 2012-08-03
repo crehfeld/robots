@@ -34,11 +34,7 @@ public class GUISim {
         EnviornmentMap map = new EnviornmentMap(mapFeatures);
         PintoManager pintoManager = new PintoManager(map);
         PathFinder pathFinder = new DijkstraPathFinder(map);
-        
-        
-        
-        
-        
+
         Image pintoGraphic = null;
         Image floorGraphic = null;
         Image wallGraphic = null;
@@ -71,16 +67,9 @@ public class GUISim {
                 ));
             }
         }
-        
-        
-        
-        
-        
-        
+
         Tween tween = new EaseLinear();
-        
-        
-        
+
         //add pintos
         List<Pinto> pintos = new ArrayList<Pinto>();
         for (Point pintoLocation : mapFeatures.getPintoLocations()) {
@@ -109,7 +98,6 @@ public class GUISim {
             MovingSprite sprite = new MovingSprite(itemGraphic, initialLocation, 5);
             item.addLocationChangeListeners(new TransitionCreator(GAME_UPDATE_FREQUENCY_MS, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
-
             
         }
         
@@ -119,16 +107,10 @@ public class GUISim {
         
         initialLocation = mapFeatures.getPersonLocation();
         animPanel.addPaintable(new Sprite(personGraphic, new Point(initialLocation.x * 20, initialLocation.y * 20), 5));
-        
-        
-        
-        
-        animPanel.addPaintable(new FramesPerSecond());
-        
-        
-        map.trackObject(new Person(mapFeatures.getPersonLocation()));
-        
 
+        animPanel.addPaintable(new FramesPerSecond());
+
+        map.trackObject(new Person(mapFeatures.getPersonLocation()));
 
         final PintoManager pm = pintoManager;
         Timer t = new Timer(true);
@@ -138,10 +120,7 @@ public class GUISim {
             }
         };
         t.scheduleAtFixedRate(task, 0, GAME_UPDATE_FREQUENCY_MS);
-        
 
-
-		
         new GUI(pintoManager, map, animPanel);
 	}
 }

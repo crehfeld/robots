@@ -6,11 +6,10 @@ import java.awt.event.*;
 import java.util.List;
 
 /**
- * Provides a graphical front end to PintoSim.
- *
+ * Provides a graphical front end to PintoSim
  * @author PlzSendTheCodes team
  */
-public class GUI implements ActionListener, FocusListener {
+public class GUI implements ActionListener {
 
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
@@ -56,75 +55,15 @@ public class GUI implements ActionListener, FocusListener {
         JPanel locationPanel = new JPanel(new FlowLayout());
         locationPanel.setBorder(BorderFactory.createTitledBorder(" Note Location "));
         locationPanel.setPreferredSize(new Dimension(200, 130));
+
+        // Labels and fields
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
-        
-        if (pintoManager == null && map == null) {
-        	JOptionPane.showMessageDialog(frame, "PintoManager and Map is null!");
-        }
-
         final JTextField xLoc = new JTextField("", 3);
-        // Get the x location
-        xLoc.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                if (xLoc.getText().equals("")) {
-                    x = 0;
-                } else {
-                    try {
-                        x = Integer.parseInt(xLoc.getText());
-                        x = Math.abs(x); // ignore negative numbers
-                    } catch (NumberFormatException nfe) {
-                        JOptionPane.showMessageDialog(frame, "Invalid input for x");
-                        xLoc.setText("");
-                    }
-                }
-            }
-        });
-
         final JTextField yLoc = new JTextField("", 3);
-        // Get the y location
-        yLoc.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                if (yLoc.getText().equals("")) {
-                    y = 0;
-                } else {
-                    try {
-                        y = Integer.parseInt(yLoc.getText());
-                        y = Math.abs(y); // ignore negative numbers
-                    } catch (NumberFormatException nfe) {
-                        JOptionPane.showMessageDialog(frame, "Invalid input for y");
-                        yLoc.setText("");
-                    }
-                }
-            }
-        });
-
         JLabel itemLabel = new JLabel("Name: ");
-
         final JTextField itemName = new JTextField("", 8);
-        itemName.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
 
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                name = itemName.getText();
-            }
-        });
         // Location button
         JButton locationButton = new JButton("Add item");
         locationButton.setLayout(new FlowLayout());
@@ -134,7 +73,14 @@ public class GUI implements ActionListener, FocusListener {
                 if (itemName.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    performAddItem(new Command(Command.Type.ADD_ITEM, name, x, y));
+                    try {
+                        x = Integer.parseInt(xLoc.getText());
+                        y = Integer.parseInt(yLoc.getText());
+                    } catch (NumberFormatException ex) {
+                        statusOfCommand.setText("Error: (" + xLoc.getText()
+                                + "," + yLoc.getText() + ") is not a valid location.");
+                    }
+                    performAddItem(new Command(Command.Type.ADD_ITEM, itemName.getText(), x, y));
                 }
                 // Clear all text fields after user is done entering
                 xLoc.setText("");
@@ -147,20 +93,11 @@ public class GUI implements ActionListener, FocusListener {
         JPanel getPanel = new JPanel(new FlowLayout());
         getPanel.setBorder(BorderFactory.createTitledBorder(" Get Item "));
         getPanel.setPreferredSize(new Dimension(200, 130));
+
+        // Labels and fields
         JLabel getItemName = new JLabel("Name: ");
-
         final JTextField getItemField = new JTextField("", 8);
-        getItemField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
 
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                name = getItemField.getText();
-            }
-        });
         // Get item button
         JButton getItemButton = new JButton("Get Item");
         getItemButton.addActionListener(new ActionListener() {
@@ -180,20 +117,10 @@ public class GUI implements ActionListener, FocusListener {
         JPanel statusPanel = new JPanel(new FlowLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder(" Get status "));
         statusPanel.setPreferredSize(new Dimension(200, 130));
+
+        // Labels and Fields
         JLabel statusNameLabel = new JLabel("Name: ");
-
         final JTextField statusNameField = new JTextField("", 8);
-        statusNameField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                name = statusNameField.getText();
-            }
-        });
 
         // status button
         JButton statusButton = new JButton("Get Status of item");
@@ -215,20 +142,11 @@ public class GUI implements ActionListener, FocusListener {
         JPanel cancelPanel = new JPanel(new FlowLayout());
         cancelPanel.setBorder(BorderFactory.createTitledBorder(" Cancel Item "));
         cancelPanel.setPreferredSize(new Dimension(200, 130));
+
+        // Labels and Fields
         JLabel cancelNameLabel = new JLabel("Name: ");
-
         final JTextField cancelNameField = new JTextField("", 8);
-        cancelNameField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                // Listen for input
-            }
 
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                name = cancelNameField.getText();
-            }
-        });
         // Cancel Button
         JButton cancelButton = new JButton("Cancel Item");
         cancelButton.addActionListener(new ActionListener() {
@@ -256,6 +174,7 @@ public class GUI implements ActionListener, FocusListener {
         helpArea.setEditable(true);
         helpArea.setPreferredSize(new Dimension(220, 60));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
+
         // Help Area listener
         helpArea.addFocusListener(new FocusListener() {
             @Override
@@ -268,6 +187,7 @@ public class GUI implements ActionListener, FocusListener {
                 query = helpArea.getText();
             }
         });
+
         // Help button
         JButton helpButton = new JButton("Send query to Help Desk");
         helpButton.addActionListener(new ActionListener() {
@@ -291,7 +211,7 @@ public class GUI implements ActionListener, FocusListener {
         commandStatus.add(statusOfCommand, BorderLayout.CENTER);
 
         /* Create a panel to house (pun intended) the house map */
-        JPanel mapPanel = new JPanel(new BorderLayout());
+        JPanel mapPanel = new JPanel(new FlowLayout());
         mapPanel.setBorder(BorderFactory.createTitledBorder(" House Map "));
         mapPanel.setPreferredSize(new Dimension(1070, 500));
         mapPanel.add(animPanel, BorderLayout.CENTER);
@@ -350,19 +270,8 @@ public class GUI implements ActionListener, FocusListener {
         // Add more actions and menu items if necessary.
     }
 
-    @Override
-    public void focusGained(FocusEvent focusEvent) {
-        // Listen for input.
-    }
-
-    @Override
-    public void focusLost(FocusEvent focusEvent) {
-        // Method is overridden whenever needed.
-    }
-
     /**
      * Adds an item to the environment map.
-     *
      * @param cmd the addItem command
      */
     public void performAddItem(Command cmd) {
@@ -470,7 +379,7 @@ public class GUI implements ActionListener, FocusListener {
                 break;
             case STARTED:
             case ITEM_BEING_CARRIED:
-                succeedText = "The status of your retrival request for" +
+                succeedText = "The status of your retrival request for " +
                         item.getName() + " is 'Started'. A pinto is " +
                         "working on it as we speak," +
                         " so you should have it soon.";

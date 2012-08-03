@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * Provides a graphical front end to PintoSim
- *
  * @author PlzSendTheCodes team
  */
 public class GUI implements ActionListener {
@@ -26,7 +25,6 @@ public class GUI implements ActionListener {
 
     /**
      * Constructs a GUI object.
-     *
      * @param pintoManager manages pintos
      * @param map          the environment map
      * @param animPanel    the animation panel
@@ -63,6 +61,32 @@ public class GUI implements ActionListener {
         final JTextField yLoc = new JTextField("", 3);
         JLabel itemLabel = new JLabel("Name: ");
         final JTextField itemName = new JTextField("", 8);
+
+        itemName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (itemName.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                } else {
+                    try {
+                        x = Math.abs(Integer.parseInt(xLoc.getText()));
+                        y = Math.abs(Integer.parseInt(yLoc.getText()));
+                    } catch (NumberFormatException ex) {
+                        statusOfCommand.setText("Error: (" + xLoc.getText()
+                                + "," + yLoc.getText() + ") is not a valid location.");
+                        xLoc.setText("");
+                        yLoc.setText("");
+                        itemName.setText("");
+                        return;
+                    }
+                    performAddItem(new Command(Command.Type.ADD_ITEM, itemName.getText(), x, y));
+                }
+                // Clear all text fields after user is done entering
+                xLoc.setText("");
+                yLoc.setText("");
+                itemName.setText("");
+            }
+        });
 
         // Location button
         JButton locationButton = new JButton("Add item");
@@ -102,6 +126,19 @@ public class GUI implements ActionListener {
         JLabel getItemName = new JLabel("Name: ");
         final JTextField getItemField = new JTextField("", 8);
 
+        getItemField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (getItemField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                } else {
+                    performGetItem(new Command(Command.Type.GET_ITEM, getItemField.getText()));
+                    // Clear out values
+                    getItemField.setText("");
+                }
+            }
+        });
+
         // Get item button
         JButton getItemButton = new JButton("Get Item");
         getItemButton.addActionListener(new ActionListener() {
@@ -117,6 +154,8 @@ public class GUI implements ActionListener {
             }
         });
 
+        JLabel getItemHint = new JLabel("...Or click the item");
+
         /* Get Status Panel */
         JPanel statusPanel = new JPanel(new FlowLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder(" Get status "));
@@ -124,7 +163,23 @@ public class GUI implements ActionListener {
 
         // Labels and Fields
         JLabel statusNameLabel = new JLabel("Name: ");
+        JLabel statusHint = new JLabel("...or alt-click the item");
         final JTextField statusNameField = new JTextField("", 8);
+
+        statusNameField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (statusNameField.getText().equals("")) {
+                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                } else {
+                    performGetItemStatus(new Command(
+                            Command.Type.GET_ITEM_STATUS,
+                            statusNameField.getText()));
+                    // Clear out fields
+                    statusNameField.setText("");
+                }
+            }
+        });
 
         // status button
         JButton statusButton = new JButton("Get Status of item");
@@ -150,7 +205,20 @@ public class GUI implements ActionListener {
 
         // Labels and Fields
         JLabel cancelNameLabel = new JLabel("Name: ");
+        JLabel cancelHint = new JLabel("...or shift-click the item");
         final JTextField cancelNameField = new JTextField("", 8);
+
+        cancelNameField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (cancelNameField.getText().equals("")) {
+                    statusOfCommand.setText("No name entered!");
+                } else {
+                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
+                    cancelNameField.setText("");
+                }
+            }
+        });
 
         // Cancel Button
         JButton cancelButton = new JButton("Cancel Item");
@@ -217,12 +285,15 @@ public class GUI implements ActionListener {
         getPanel.add(getItemName);
         getPanel.add(getItemField);
         getPanel.add(getItemButton);
+        getPanel.add(getItemHint);
         statusPanel.add(statusNameLabel);
         statusPanel.add(statusNameField);
         statusPanel.add(statusButton);
+        statusPanel.add(statusHint);
         cancelPanel.add(cancelNameLabel);
         cancelPanel.add(cancelNameField);
         cancelPanel.add(cancelButton);
+        cancelPanel.add(cancelHint);
         helpPanel.add(helpArea);
         helpPanel.add(helpButton);
         commands.add(locationPanel);
@@ -256,7 +327,6 @@ public class GUI implements ActionListener {
 
     /**
      * Sets the status of command message.
-     *
      * @param str the message to display
      */
     public void display(String str) {
@@ -265,7 +335,6 @@ public class GUI implements ActionListener {
 
     /**
      * Adds an item to the environment map.
-     *
      * @param cmd the addItem command
      */
     private void performAddItem(Command cmd) {
@@ -315,7 +384,6 @@ public class GUI implements ActionListener {
 
     /**
      * Gets an item for the user
-     *
      * @param cmd the getItem command
      */
     private void performGetItem(final Command cmd) {
@@ -419,7 +487,6 @@ public class GUI implements ActionListener {
 
     /**
      * Cancels an item retrieval.
-     *
      * @param cmd the cancelItem command
      */
     private void performCancelGetItem(Command cmd) {
@@ -489,9 +556,7 @@ public class GUI implements ActionListener {
             display("Okay, your message was sent to the Help Desk.");
         }
     }
-    
-    
-    
+
     private void setupMouseListener(Component component) {
         component.addMouseListener(new MouseAdapter(){
             public void mousePressed(MouseEvent evt) {

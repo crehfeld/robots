@@ -481,6 +481,8 @@ public class GUI implements ActionListener {
     public void performHelpDesk(final String query) {
         if (query.length() == 0) {
             display("No query entered!");
+        } else if (query.length() < 3) {
+            display("Your query was too short.");
         } else {
             display("Okay, your message was sent to the Help Desk.");
         }

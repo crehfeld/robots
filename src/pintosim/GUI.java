@@ -271,6 +271,14 @@ public class GUI implements ActionListener {
     }
 
     /**
+     * Sets the status of command message.
+     * @param str the message to display
+     */
+    public void display(String str) {
+        statusOfCommand.setText(str);
+    }
+
+    /**
      * Adds an item to the environment map.
      * @param cmd the addItem command
      */
@@ -309,84 +317,99 @@ public class GUI implements ActionListener {
      * Gets an item for the user
      * @param cmd the getItem command
      */
-    public void performGetItem(Command cmd) {
-        String errorText = "";
-        String succeedText = "";
-        final Item item = map.getItemByName((cmd.getItemName()));
-
+    private void performGetItem(final Command cmd) {
+        final Item item = map.getItemByName(cmd.getItemName());
         if (item == null) {
-            errorText = "I don't know where " + name +
-                    " is. You need to add the item first.";
-            statusOfCommand.setText(errorText);
+            display(String.format(
+                    "I don't know where %s is. You need to first add the item."
+                    , cmd.getItemName()
+            ));
+
+            return;
         }
         if (pintoManager.uncompletedTaskExistsFor(item)) {
-            errorText = "You already requested that I bring " +
-                    cmd.getItemName() + " to you. You can't request the same" +
-                    " item again.";
-            statusOfCommand.setText(errorText);
-        } else {
-            if (pintoManager.canImmediatelyFulfillATask()) {
-                succeedText = "Okay I will get " + cmd.getItemName() +
-                        " right now. Please wait a moment.";
-                statusOfCommand.setText(succeedText);
-            } else {
-                errorText = "All pintos are busy right now, but I will " +
-                        "get " + cmd.getItemName() + " as soon as possible.";
-                statusOfCommand.setText(errorText);
-            }
-            cmd.setGetItemCallback(new GetItemCallback() {
-                @Override
-                public void onComplete(List<Point> path) {
-                    statusOfCommand.setText("Here is your " + item.getName());
-                }
-            });
-            pintoManager.addCommand(cmd);
+            display(String.format(
+                    "You already requested that I bring %s to you." +
+                            " You can't request the same item again yet."
+                    , item.getName()
+            ));
+
+            return;
         }
+        if (pintoManager.canImmediatelyFulfillATask()) {
+            display(String.format(
+                    "Ok, I will get %s right now. Please wait a moment.\n"
+                    , cmd.getItemName()
+            ));
+        } else {
+            display(String.format(
+                    "All pintos are busy right now, but I will get %s as soon as I can."
+                    , cmd.getItemName()
+            ));
+        }
+        cmd.setGetItemCallback(new GetItemCallback() {
+            public void onComplete(List<Point> path) {
+                display(String.format(
+                        "\nHere's your %s.\n"
+                        , cmd.getItemName()
+                ));
+            }
+            public void onCancel(Point currentLocation, String itemName) {}
+        });
+        pintoManager.addCommand(cmd);
     }
 
-    /**
-     * Gets the status of the item.
-     * @param cmd the getStatus command
-     */
-    public void performGetItemStatus(Command cmd) {
-        String errorText = "";
-        String succeedText = "";
+    private void performGetItemStatus(Command cmd) {
         Item item = map.getItemByName(cmd.getItemName());
         if (item == null) {
-            errorText = "I never knew where " + cmd.getItemName() +
-                    " was so it is possible I am not retrieving it for you. You need to first" +
-                    " tell me where the item is.";
-            statusOfCommand.setText(errorText);
-        }
+            display(String.format(
+                    "I never knew where %s was, " +
+                            "so its not possible that I'm retrieving" +
+                            " it for you." +
+                            " You need to first tell me where that item is."
+                    , cmd.getItemName()
+            ));
 
-        if (!pintoManager.uncompletedTaskExistsFor(item) && !pintoManager.completedTaskExistsFor(item)) {
-            errorText = item.getName() + " was not requested by you so there is nothing to report.";
-            statusOfCommand.setText(errorText);
+            return;
         }
+        if (!pintoManager.uncompletedTaskExistsFor(item) &&
+                !pintoManager.completedTaskExistsFor(item)) {
+            display(String.format(
+                    "You never requested that I retrieve %s for you," +
+                            " so there is no status to report."
+                    , item.getName()
+            ));
 
+            return;
+        }
         switch (pintoManager.getTaskStatus(item)) {
             case COMPLETE:
-                errorText = "I have already delivered " + item.getName() +
-                        " to you. Status is complete.";
-                statusOfCommand.setText(errorText);
+                display(String.format(
+                        "The status of your retrieval request for %s is 'Complete'. I already delivered it."
+                        , item.getName()
+                ));
                 break;
             case QUEUED:
-                succeedText = "The status of your retrival request for " +
-                        item.getName() +
-                        " is 'Queued'. All my pintos are busy" +
-                        " doing other things. They will get it for you soon.";
-                statusOfCommand.setText(succeedText);
+                display(String.format(
+                        "The status of your retrieval request for" +
+                                " %s is 'Queued'. All my pintos are busy doing" +
+                                " other things." +
+                                " They will get it for you soon."
+                        , item.getName()
+                ));
                 break;
             case STARTED:
             case ITEM_BEING_CARRIED:
-                succeedText = "The status of your retrival request for " +
-                        item.getName() + " is 'Started'. A pinto is " +
-                        "working on it as we speak," +
-                        " so you should have it soon.";
-                statusOfCommand.setText(succeedText);
+                display(String.format(
+                        "The status of your retrieval request for" +
+                                " %s is 'Started'. A pinto is working" +
+                                " on it as we speak, " +
+                                "so you should have it soon."
+                        , item.getName()
+                ));
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown Status");
+                throw new UnsupportedOperationException("unknown status");
         }
     }
 
@@ -394,62 +417,73 @@ public class GUI implements ActionListener {
      * Cancels the item retrieval
      * @param cmd the Command
      */
-    public void performCancelGetItem(Command cmd) {
-    	Item item = map.getItemByName(cmd.getItemName());
-    	String errorText = "";
-    	if (item == null) {
-    		errorText = "I never knew where " + cmd.getItemName() +
-    				" was, so it's not possible that I am retrieving" +
-    				" it for you.";
-    		statusOfCommand.setText(errorText);
-    	}
-    	if (pintoManager.uncompletedTaskExistsFor(item)) {
-    		if (pintoManager.isItemBeingCarried(item)) {
-    			JOptionPane.showConfirmDialog(frame, "A Pinto is carrying" +
-    					" the item now. The item will be left on the " +
-    					"ground. Do you want to cancel it?");
-    			// Work in progress
-    			// Add action Listener here.
-    			// Also set potentialGetItemCancelation to null depending on the user's answer.
-    		}
-    		else {
-    			statusOfCommand.setText("Okay, it's canceled.");
-;    		}
-    	}
-    	if (pintoManager.completedTaskExistsFor(item)) {
-    		errorText = "I already completed the request for " +
-    				item.getName() + " so it's too late to cancel.";
-    		statusOfCommand.setText("errorText");
-    	}
-    	errorText = "You never requested that I retrieve " +
-    			item.getName() + " for you, so there is nothing" +
-    					" to cancel.";
-    	statusOfCommand.setText(errorText);
+    private void performCancelGetItem(Command cmd) {
+        Item item = map.getItemByName(cmd.getItemName());
+        if (item == null) {
+            display(String.format(
+                    "I never knew where %s was, " +
+                            "so it's not possible that I'm retrieving it for you."
+                    , cmd.getItemName()
+            ));
+            return;
+        }
+        if (pintoManager.uncompletedTaskExistsFor(item)) {
+            if (pintoManager.isItemBeingCarried(item)) {
+
+
+                // Work in progress. Add Action listener here.
+
+
+
+
+                potentialGetItemCancelationCommand = cmd;
+                pintoManager.pauseTaskIfRunning(item);
+            } else {
+                display("Ok, it's canceled.");
+                pintoManager.addCommand(cmd);
+            }
+            return;
+        }
+        if (pintoManager.completedTaskExistsFor(item)) {
+            display(String.format(
+                    "I already completed the request for %s," +
+                            " so it's too late to cancel."
+                    , item.getName()
+            ));
+            return;
+        }
+        display(String.format(
+                "You never requested that I retrieve %s for you," +
+                        " so there is nothing to cancel."
+                , item.getName()
+        ));
     }
-    
+
+
     /**
      * Cancels the items and the Pinto leaves it at the ground.
      * @param cmd the cancel command 
      */
-    public void performConfirmedCancelGetItem(Command cmd) {
-    	String notice = "";
-    	if (potentialGetItemCancelationCommand == null) {
-    		return;
-    	}
-    	Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
-    	
-    	if (cmd.getConfirmation() == true) {
-    		notice = "Okay, I will leave it on the ground at (" +
-    				item.getX() + "," + item.getY() + ").";
-    		statusOfCommand.setText(notice);
-     	}
-    	else {
-    		notice = "Okay you will have the item soon.";
-    		statusOfCommand.setText(notice);
-    		pintoManager.unPauseTask(item);
-    	}
-    	potentialGetItemCancelationCommand = null;
+    private void performConfirmedCancelGetItem(Command cmd) {
+        if (potentialGetItemCancelationCommand == null) {
+            return;
+        }
+
+        Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
+        if (cmd.getConfirmation() == true) {
+            display(String.format(
+                    "Ok, I will leave it on the ground at (%d, %d)."
+                    , item.getX()
+                    , item.getY()
+            ));
+            pintoManager.addCommand(potentialGetItemCancelationCommand);
+        } else {
+            display("Ok, you will have the item soon.");
+            pintoManager.unPauseTask(item);
+        }
+        potentialGetItemCancelationCommand = null;
     }
+
 
     /**
      * Sends the user's help request to the help desk.

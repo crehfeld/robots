@@ -87,6 +87,7 @@ public class Pinto extends MovableObject {
                 // the person blocks movement onto the tile
                 if (currentLocationAdjacentToHeadingLocation()) {
                     transitionToNewState(PintoState.NAVIGATING_TO_DOCKING_STATION);
+                    command.onComplete(path);
                     dropItem();
                 }
                 break;
@@ -110,7 +111,6 @@ public class Pinto extends MovableObject {
             case IDLE:
                 currentHeading = null;
                 currentPath = null;
-                command.onComplete(path);
                 pintoManager.setTaskStatus(command.getItemName(), PintoManager.TaskStatus.COMPLETE);
                 break;
                 

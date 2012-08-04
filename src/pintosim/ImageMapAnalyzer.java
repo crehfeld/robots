@@ -40,6 +40,7 @@ public class ImageMapAnalyzer implements MapFeatures {
     private BufferedImage img;
     private List<Point> pintos = new ArrayList<Point>();
     private List<Point> items = new ArrayList<Point>();
+    private List<Point> walls = new ArrayList<Point>();
     private Point person;
     private Point dockingStation;
     private boolean[][] freeSpaces;
@@ -116,6 +117,7 @@ public class ImageMapAnalyzer implements MapFeatures {
                     }
                     person = point;
                 } else if (OBSTRUCTION_COLOR.equals(pixelColor)) {
+                    walls.add(point);
                     freeSpaces[x][y] = false;
                 } else if (NO_OBSTRUCTION_COLOR.equals(pixelColor)) {
                     freeSpaces[x][y] = true;
@@ -144,6 +146,14 @@ public class ImageMapAnalyzer implements MapFeatures {
         List<Point> copy = new ArrayList<Point>();
         for (Point p : items) {
             copy.add(new Point(p));
+        }
+        return copy;
+    }
+    
+    public List<Point> getWallLocations() {
+        List<Point> copy = new ArrayList<Point>();
+        for (Point w : walls) {
+            copy.add(new Point(w));
         }
         return copy;
     }

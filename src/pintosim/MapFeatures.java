@@ -39,7 +39,6 @@ public interface MapFeatures {
     public Point getPintoDockingStationLocation();
     
     
-    
     /**
      * Provides a list of Points which represent initial locations of Items
      * 

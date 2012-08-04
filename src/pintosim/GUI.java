@@ -3,6 +3,7 @@ package pintosim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 /**
  * Provides a graphical front end to PintoSim.
@@ -16,8 +17,6 @@ public class GUI implements ActionListener, FocusListener {
     private JLabel statusOfCommand = new JLabel("");
 
     // Backend objects
-    private CommandParser interpreter;
-    private Command command;
     private EnviornmentMap map;
     private PintoManager pintoManager;
     private Command potentialGetItemCancelationCommand;
@@ -26,22 +25,19 @@ public class GUI implements ActionListener, FocusListener {
     private String name;
     private int x;
     private int y;
+    
     private String query;
 
     /**
      * Constructs a GUI object.
      * @param pintomanager manages pintos
-     * @param map the environment map
-     * @param command a command
+     * @param map          the environment map
+     * @param command      a command
      */
-    public GUI(/*PintoManager pintomanager, EnviornmentMap map, Command command*/) {
-
-        // @Note: Make the GUI work with the rest of the system:
-
-        /*
-        pintomanager = this.pintoManager;
-        map = this.map;
-        command = this.command; */
+    public GUI(PintoManager pintoManager, EnviornmentMap map) {
+    	
+    	this.pintoManager = pintoManager;
+    	this.map = map;
 
         /* Menu Bar */
         JMenuBar menu = new JMenuBar();
@@ -62,6 +58,10 @@ public class GUI implements ActionListener, FocusListener {
         locationPanel.setPreferredSize(new Dimension(200, 130));
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
+        
+        if (pintoManager == null && map == null) {
+        	JOptionPane.showMessageDialog(frame, "PintoManager and Map is null!");
+        }
 
         final JTextField xLoc = new JTextField("", 3);
         // Get the x location
@@ -122,7 +122,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                    name = itemName.getText();
+                name = itemName.getText();
             }
         });
         // Location button
@@ -133,12 +133,8 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (itemName.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
-                }
-                else {
-                    // Work in progress: Actually add the item to the map, if
-                    // possible.
-                    JOptionPane.showMessageDialog(frame, name + " has been noted at " +
-                            x + " " + y + "!");
+                } else {
+                    performAddItem(new Command(Command.Type.ADD_ITEM, name, x, y));
                 }
                 // Clear all text fields after user is done entering
                 xLoc.setText("");
@@ -162,7 +158,7 @@ public class GUI implements ActionListener, FocusListener {
 
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                    name = getItemField.getText();
+                name = getItemField.getText();
             }
         });
         // Get item button
@@ -173,11 +169,7 @@ public class GUI implements ActionListener, FocusListener {
                 if (getItemField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    // first check if the item is valid and then,
-                    // show this dialog if Pintos are available:
-                    // if not, show another dialog. Work in progress still.
-                    JOptionPane.showMessageDialog(frame, "Pintos have been " +
-                            "dispatched to get " + name + "!");
+                    performGetItem(new Command(Command.Type.GET_ITEM));
                     // Clear out values
                     getItemField.setText("");
                 }
@@ -202,6 +194,7 @@ public class GUI implements ActionListener, FocusListener {
                 name = statusNameField.getText();
             }
         });
+
         // status button
         JButton statusButton = new JButton("Get Status of item");
         statusButton.addActionListener(new ActionListener() {
@@ -211,9 +204,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    // Work in progress:
-                    // Check status here and then show this dialog:
-                    JOptionPane.showMessageDialog(frame, "Getting status of " + name);
+                    performGetItemStatus(new Command(Command.Type.GET_ITEM_STATUS));
                     // Clear out fields
                     statusNameField.setText("");
                 }
@@ -244,16 +235,10 @@ public class GUI implements ActionListener, FocusListener {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (cancelNameField.getText().equals("")) {
-                    JOptionPane.showMessageDialog(frame, "No name entered!");
+                    statusOfCommand.setText("No name entered!");
                 }
                 else {
-                    // Work in progress
-                    // Show confirm dialogs if Pinto already has the item
-                    // or this message dialog if the pinto
-                    // hasn't gotten the item yet:
-                    JOptionPane.showMessageDialog(frame, "Okay, retrieval " +
-                            "of " + name + " has been canceled");
-                    // Clear out fields
+                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM));
                     cancelNameField.setText("");
                 }
             }
@@ -263,7 +248,6 @@ public class GUI implements ActionListener, FocusListener {
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
         helpPanel.setPreferredSize(new Dimension(250, 130));
-
         final JTextArea helpArea = new JTextArea("");
         helpArea.setBorder(BorderFactory.createTitledBorder(""));
         final JScrollPane helpScrollPane = new JScrollPane(helpArea);
@@ -272,6 +256,7 @@ public class GUI implements ActionListener, FocusListener {
         helpArea.setEditable(true);
         helpArea.setPreferredSize(new Dimension(220, 60));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
+        // Help Area listener
         helpArea.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent focusEvent) {
@@ -290,12 +275,9 @@ public class GUI implements ActionListener, FocusListener {
             public void actionPerformed(ActionEvent actionEvent) {
                 if (helpArea.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No query entered!");
-                }
-                else {
+                } else {
                     // Send to help desk.
-                    JOptionPane.showMessageDialog(frame, "Your query has been" +
-                            " sent to the help desk! Someone will be" +
-                            " dispatched shortly.");
+                    performHelpDesk();
                     // Clear all fields
                     helpArea.setText("");
                 }
@@ -303,7 +285,6 @@ public class GUI implements ActionListener, FocusListener {
         });
 
         /* Create a commandStatus panel to notify the user if a command finishes */
-        // Work in progress for now.
         JPanel commandStatus = new JPanel(new FlowLayout());
         //commandStatus.setBorder(BorderFactory.createTitledBorder(" Status of commands "));
         commandStatus.setPreferredSize(new Dimension(1070, 25));
@@ -368,10 +349,6 @@ public class GUI implements ActionListener, FocusListener {
         // Add more actions and menu items if necessary.
     }
 
-    public static void main(String[] args) {
-        new GUI();
-    }
-
     @Override
     public void focusGained(FocusEvent focusEvent) {
         // Listen for input.
@@ -380,5 +357,194 @@ public class GUI implements ActionListener, FocusListener {
     @Override
     public void focusLost(FocusEvent focusEvent) {
         // Method is overridden whenever needed.
+    }
+
+    /**
+     * Adds an item to the environment map.
+     *
+     * @param cmd the addItem command
+     */
+    public void performAddItem(Command cmd) {
+        String errorText = "";
+        String succeedText = "";
+        if (!map.withinBoundaries(cmd.getX(), cmd.getY())) {
+            errorText = "I can't add the " + cmd.getItemName() +
+                    " there, the location (" + x + "," + y + ")" +
+                    " is outside of the bounds (" + map.getHeight() +
+                    "," + map.getWidth() + ").";
+            statusOfCommand.setText(errorText);
+        }
+        if (map.isLocationWalkable(cmd.getX(), cmd.getY())) {
+            errorText = "I can't add the " + cmd.getItemName() +
+                    " there, the location (" + cmd.getX() + "," +
+                    cmd.getY() + ") is occupied by something else.";
+            statusOfCommand.setText(errorText);
+        } else {
+            Item item = map.getItemByName(cmd.getItemName());
+            if (item != null) {
+                errorText = "Can't add the item " + name +
+                        ". It already exists in the system at (" +
+                        cmd.getX() + "," + cmd.getY() + ").";
+                statusOfCommand.setText(errorText);
+            }
+
+            map.trackItem(new Item(cmd.getItemName(), cmd.getX(), cmd.getY()));
+            succeedText = cmd.getItemName() + " recorded. I can now" +
+                    " retrieve it anytime you want.";
+            statusOfCommand.setText(succeedText);
+        }
+    }
+
+    /**
+     * Gets an item for the user
+     * @param cmd the getItem command
+     */
+    public void performGetItem(Command cmd) {
+        String errorText = "";
+        String succeedText = "";
+        final Item item = map.getItemByName((cmd.getItemName()));
+
+        if (item == null) {
+            errorText = "I don't know where " + name +
+                    " is. You need to add the item first.";
+            statusOfCommand.setText(errorText);
+        }
+        if (pintoManager.uncompletedTaskExistsFor(item)) {
+            errorText = "You already requested that I bring " +
+                    cmd.getItemName() + " to you. You can't request the same" +
+                    " item again.";
+            statusOfCommand.setText(errorText);
+        } else {
+            if (pintoManager.canImmediatelyFulfillATask()) {
+                succeedText = "Okay I will get " + cmd.getItemName() +
+                        " right now. Please wait a moment.";
+                statusOfCommand.setText(succeedText);
+            } else {
+                errorText = "All pintos are busy right now, but I will " +
+                        "get " + cmd.getItemName() + " as soon as possible.";
+                statusOfCommand.setText(errorText);
+            }
+            cmd.setGetItemCallback(new GetItemCallback() {
+                @Override
+                public void onComplete(List<Point> path) {
+                    statusOfCommand.setText("Here is your " + item.getName());
+                }
+            });
+            pintoManager.addCommand(cmd);
+        }
+    }
+
+    /**
+     * Gets the status of the item.
+     * @param cmd the getStatus command
+     */
+    public void performGetItemStatus(Command cmd) {
+        String errorText = "";
+        String succeedText = "";
+        Item item = map.getItemByName(cmd.getItemName());
+        if (item == null) {
+            errorText = "I never knew where " + cmd.getItemName() +
+                    " was so it is possible I am not retrieving it for you. You need to first" +
+                    " tell me where the item is.";
+            statusOfCommand.setText(errorText);
+        }
+
+        if (!pintoManager.uncompletedTaskExistsFor(item) && !pintoManager.completedTaskExistsFor(item)) {
+            errorText = item.getName() + " was not requested by you so there is nothing to report.";
+            statusOfCommand.setText(errorText);
+        }
+
+        switch (pintoManager.getTaskStatus(item)) {
+            case COMPLETE:
+                errorText = "I have already delivered " + item.getName() +
+                        " to you. Status is complete.";
+                statusOfCommand.setText(errorText);
+                break;
+            case QUEUED:
+                succeedText = "The status of your retrival request for " +
+                        item.getName() +
+                        " is 'Queued'. All my pintos are busy" +
+                        " doing other things. They will get it for you soon.";
+                statusOfCommand.setText(succeedText);
+                break;
+            case STARTED:
+            case ITEM_BEING_CARRIED:
+                succeedText = "The status of your retrival request for" +
+                        item.getName() + " is 'Started'. A pinto is " +
+                        "working on it as we speak," +
+                        " so you should have it soon.";
+                statusOfCommand.setText(succeedText);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown Status");
+        }
+    }
+
+    /**
+     * Cancels the item retrieval
+     * @param cmd the Command
+     */
+    public void performCancelGetItem(Command cmd) {
+    	Item item = map.getItemByName(cmd.getItemName());
+    	String errorText = "";
+    	if (item == null) {
+    		errorText = "I never knew where " + cmd.getItemName() +
+    				" was, so it's not possible that I am retrieving" +
+    				" it for you.";
+    		statusOfCommand.setText(errorText);
+    	}
+    	if (pintoManager.uncompletedTaskExistsFor(item)) {
+    		if (pintoManager.isItemBeingCarried(item)) {
+    			JOptionPane.showConfirmDialog(frame, "A Pinto is carrying" +
+    					" the item now. The item will be left on the " +
+    					"ground. Do you want to cancel it?");
+    			// Work in progress
+    			// Add action Listener here.
+    			// Also set potentialGetItemCancelation to null depending on the user's answer.
+    		}
+    		else {
+    			statusOfCommand.setText("Okay, it's canceled.");
+;    		}
+    	}
+    	if (pintoManager.completedTaskExistsFor(item)) {
+    		errorText = "I already completed the request for " +
+    				item.getName() + " so it's too late to cancel.";
+    		statusOfCommand.setText("errorText");
+    	}
+    	errorText = "You never requested that I retrieve " +
+    			item.getName() + " for you, so there is nothing" +
+    					" to cancel.";
+    	statusOfCommand.setText(errorText);
+    }
+    
+    /**
+     * Cancels the items and the Pinto leaves it at the ground.
+     * @param cmd the cancel command 
+     */
+    public void performConfirmedCancelGetItem(Command cmd) {
+    	String notice = "";
+    	if (potentialGetItemCancelationCommand == null) {
+    		return;
+    	}
+    	Item item = map.getItemByName(potentialGetItemCancelationCommand.getItemName());
+    	
+    	if (cmd.getConfirmation() == true) {
+    		notice = "Okay, I will leave it on the ground at (" +
+    				item.getX() + "," + item.getY() + ").";
+    		statusOfCommand.setText(notice);
+     	}
+    	else {
+    		notice = "Okay you will have the item soon.";
+    		statusOfCommand.setText(notice);
+    		pintoManager.unPauseTask(item);
+    	}
+    	potentialGetItemCancelationCommand = null;
+    }
+
+    /**
+     * Sends the user's help request to the help desk.
+     */
+    public void performHelpDesk() {
+        statusOfCommand.setText("Okay, your message was sent to the Help Desk.");
     }
 }

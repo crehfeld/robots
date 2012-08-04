@@ -22,7 +22,10 @@ public class GUI implements ActionListener {
     // Item on the map
     private int x;
     private int y;
-
+    
+    private JTextField xLoc = new JTextField("", 3);
+    private JTextField yLoc = new JTextField("", 3);
+    private JTextField itemName = new JTextField("", 8);
     /**
      * Constructs a GUI object.
      * @param pintoManager manages pintos
@@ -57,10 +60,9 @@ public class GUI implements ActionListener {
         // Labels and fields
         JLabel xLabel = new JLabel("X: ");
         JLabel yLabel = new JLabel("Y: ");
-        final JTextField xLoc = new JTextField("", 3);
-        final JTextField yLoc = new JTextField("", 3);
+
         JLabel itemLabel = new JLabel("Name: ");
-        final JTextField itemName = new JTextField("", 8);
+
 
         itemName.addActionListener(new ActionListener() {
             @Override
@@ -562,6 +564,16 @@ public class GUI implements ActionListener {
                 // integer division to get back down to tile coords
                 int x = evt.getX() / 20;
                 int y = evt.getY() / 20;
+                
+                if (evt.isControlDown()) {
+                    //populate location of note location form
+                    xLoc.setText("" + x);
+                    yLoc.setText("" + y);
+                    itemName.requestFocusInWindow();
+                    return;
+                }
+                
+                
                 for (Item item : map.getItemsAt(x, y)) {
                     if (evt.isShiftDown()) {
                         //cancel item

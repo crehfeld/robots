@@ -10,6 +10,13 @@ import java.util.*;
 public class PintoSim {
     private static final String CONFIG_FILENAME = "config.properties";
     private static final int    OUTPUT_RENDERING_FREQUENCY_MS = 100;
+    //lol a unicode fail whale...
+    private static final String failureMessage = "failure initializing\n\n"
+                              + "▄██████████████▄▐█▄▄▄▄█▌\n"
+                              + "██████▌▄▌▄▐▐▌███▌▀▀██▀▀\n"
+                              + "████▄█▌▄▌▄▐▐▌▀███▄▄█▌\n"
+                              + "▄▄▄▄▄██████████████▀\n";
+    
 
     public static void main(String[] args) {
         try {
@@ -17,8 +24,7 @@ public class PintoSim {
             props.load(new FileReader(new File(CONFIG_FILENAME)));
             showCommandLineInterface(props);
         } catch (Exception e) {
-            System.out.println("error initializing");
-            e.printStackTrace();
+            System.out.println(failureMessage);
         }
     }
 

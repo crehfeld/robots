@@ -9,13 +9,22 @@ import java.util.*;
 public class GUISim {
     private static final String CONFIG_FILENAME = "config.properties";
     
+    //lol a unicode fail whale...
+    private static final String failureMessage = "failure initializing\n\n"
+                              + "▄██████████████▄▐█▄▄▄▄█▌\n"
+                              + "██████▌▄▌▄▐▐▌███▌▀▀██▀▀\n"
+                              + "████▄█▌▄▌▄▐▐▌▀███▄▄█▌\n"
+                              + "▄▄▄▄▄██████████████▀\n";
+    
+    
 	public static void main(String[] args) {
+
         try {
             Properties props = new Properties();
             props.load(new FileReader(new File(CONFIG_FILENAME)));
             showGUIInterface(props);
         } catch (Exception e) {
-            System.out.println("error initializing");
+            System.out.println(failureMessage);
             e.printStackTrace();
         }
 	}
@@ -63,7 +72,7 @@ public class GUISim {
         }
 
 
-        final Tween tween = new EaseLinear();
+        final Tween tween = new TweenFactory().create(TweenFactory.Algorithm.Quadratic, TweenFactory.Action.InOut);
         // this listener gets called when we add a new item to the enviornmentMap.
 
 

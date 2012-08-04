@@ -34,7 +34,7 @@ public class GUI implements ActionListener, FocusListener {
      * @param map          the environment map
      * @param command      a command
      */
-    public GUI(PintoManager pintoManager, EnviornmentMap map) {
+    public GUI(PintoManager pintoManager, EnviornmentMap map, AnimPanel animPanel) {
     	
     	this.pintoManager = pintoManager;
     	this.map = map;
@@ -169,7 +169,7 @@ public class GUI implements ActionListener, FocusListener {
                 if (getItemField.getText().equals("")) {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 } else {
-                    performGetItem(new Command(Command.Type.GET_ITEM));
+                    performGetItem(new Command(Command.Type.GET_ITEM, getItemField.getText()));
                     // Clear out values
                     getItemField.setText("");
                 }
@@ -204,7 +204,7 @@ public class GUI implements ActionListener, FocusListener {
                     JOptionPane.showMessageDialog(frame, "No name entered!");
                 }
                 else {
-                    performGetItemStatus(new Command(Command.Type.GET_ITEM_STATUS));
+                    performGetItemStatus(new Command(Command.Type.GET_ITEM_STATUS, statusNameField.getText()));
                     // Clear out fields
                     statusNameField.setText("");
                 }
@@ -238,7 +238,7 @@ public class GUI implements ActionListener, FocusListener {
                     statusOfCommand.setText("No name entered!");
                 }
                 else {
-                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM));
+                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
                     cancelNameField.setText("");
                 }
             }
@@ -294,6 +294,7 @@ public class GUI implements ActionListener, FocusListener {
         JPanel mapPanel = new JPanel(new BorderLayout());
         mapPanel.setBorder(BorderFactory.createTitledBorder(" House Map "));
         mapPanel.setPreferredSize(new Dimension(1070, 500));
+        mapPanel.add(animPanel, BorderLayout.CENTER);
 
         // About menu
         JMenuItem aboutTeam = new JMenuItem("About PintoSim");

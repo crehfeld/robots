@@ -214,7 +214,11 @@ public class GUI implements ActionListener {
                 if (cancelNameField.getText().equals("")) {
                     display("No name entered!");
                 } else {
-                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
+                    performCancelGetItem(
+                            new Command(
+                                    Command.Type.CANCEL_GET_ITEM,
+                                    cancelNameField.getText()
+                            ));
                     cancelNameField.setText("");
                 }
             }
@@ -251,7 +255,7 @@ public class GUI implements ActionListener {
 
         helpArea.setWrapStyleWord(true);
         helpArea.setEditable(true);
-        helpScrollPane.setPreferredSize(new Dimension(220, 60));
+        helpScrollPane.setPreferredSize(new Dimension(220, 65));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
 
         // Help button
@@ -301,7 +305,6 @@ public class GUI implements ActionListener {
         cancelPanel.add(cancelNameField);
         cancelPanel.add(cancelButton);
         cancelPanel.add(cancelHint);
-        //helpPanel.add(helpArea);
         helpPanel.add(helpScrollPane);
         helpPanel.add(helpButton);
         commands.add(locationPanel);

@@ -28,12 +28,7 @@ public class GUISim {
             e.printStackTrace();
         }
 	}
-    
-    
-    
-    
-    
-	
+
 	public static void showGUIInterface(Properties props) throws Exception {
         final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
         final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
@@ -52,8 +47,6 @@ public class GUISim {
         );
 
         animPanel.addPaintable(new FramesPerSecond());
-
-
 
         // create sprites for the walls and floor
         // we will every single space with either a wall or floor graphic
@@ -121,7 +114,6 @@ public class GUISim {
             item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
         }
-        
 
         //we add the listener after we manually add items otherwise they get added twice
         map.addItemTrackedListener(new ItemTrackedListener() {
@@ -132,9 +124,6 @@ public class GUISim {
                 animPanel.addPaintable(sprite);
             }
         });
-        
-        
-        
 
         Point initialLocation = graphicsPackage.translateCoords(mapFeatures.getPintoDockingStationLocation());
         animPanel.addPaintable(new Sprite(graphicsPackage.getDockingImage(),

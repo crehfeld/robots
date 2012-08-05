@@ -96,7 +96,7 @@ public class GUISim {
             pinto.addLocationChangeListener(
                 new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween)
             );
-            animPanel.addPaintable(new OrbitalDecorator(sprite, 2, 84));
+            animPanel.addPaintable(new OrbitalDecorator(sprite, 2, rand(50, 200)));
         }
 
 
@@ -189,4 +189,8 @@ public class GUISim {
 
         new GUI(pintoManager, map, animPanel);
 	}
+    
+    private static int rand(int Min, int Max) {
+        return Min + (int)(Math.random() * ((Max - Min) + 1));
+    }
 }

@@ -165,15 +165,16 @@ public class GUISim {
         initialLocation = graphicsPackage.translateCoords(
             mapFeatures.getPersonLocation()
         );
-        Paintable p = null;
-        Sprite personSprite = new Sprite(
+        Paintable p = new Sprite(
             graphicsPackage.getPersonImage()
           , initialLocation
           , 5
         );
-        p = personSprite;
-        p = new BackAndForthDecorator(personSprite, 3, 100);
-        animPanel.addPaintable(p);
+
+        animPanel.addPaintable(new BackAndForthDecorator(p, 2, 100));
+     
+        
+        
 
         map.trackObject(new Person(mapFeatures.getPersonLocation()));
 

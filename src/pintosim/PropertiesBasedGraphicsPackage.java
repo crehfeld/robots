@@ -23,9 +23,10 @@ public class PropertiesBasedGraphicsPackage implements GraphicsPackage {
     private BufferedImage map;
     private int tileSize;
     private Map<String, Image> namedExtraImages = new HashMap<String, Image>();
+    private Properties props;
     
     public PropertiesBasedGraphicsPackage(Properties props) throws Exception {
-        
+        this.props = props;
         tileSize = Integer.parseInt(props.getProperty("TileSizePixels"));
         
         File dir = new File(props.getProperty("GraphicsPackageDir"));
@@ -53,11 +54,10 @@ public class PropertiesBasedGraphicsPackage implements GraphicsPackage {
     private Image load(File dir, String name) throws IOException {
         return ImageIO.read(new File(dir.getPath() + "/" + name));
     }
+    
     private Image load(File file) throws IOException {
         return ImageIO.read(file);
     }
-    
-    
     
     public Map<String, Image> getNamedExtraImages() {
         return namedExtraImages;

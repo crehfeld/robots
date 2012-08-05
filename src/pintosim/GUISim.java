@@ -11,10 +11,10 @@ public class GUISim {
     
     //lol a unicode fail whale...
     private static final String failureMessage = "failure initializing\n\n"
-                              + "_¦¦¦¦¦¦¦¦¦¦¦¦¦¦_¦¦____¦¦\n"
-                              + "¦¦¦¦¦¦¦_¦_¦¦¦¦¦¦¦¯¯¦¦¯¯\n"
-                              + "¦¦¦¦_¦¦_¦_¦¦¦¯¦¦¦__¦¦\n"
-                              + "_____¦¦¦¦¦¦¦¦¦¦¦¦¦¦¯\n";
+                              + "▄██████████████▄▐█▄▄▄▄█▌\n"
+                              + "██████▌▄▌▄▐▐▌███▌▀▀██▀▀\n"
+                              + "████▄█▌▄▌▄▐▐▌▀███▄▄█▌\n"
+                              + "▄▄▄▄▄██████████████▀\n";
     
     
 	public static void main(String[] args) {
@@ -172,7 +172,7 @@ public class GUISim {
           , 5
         );
         p = personSprite;
-        p = new OrbitalDecorator(personSprite, 3, 100);
+        p = new BackAndForthDecorator(personSprite, 3, 100);
         animPanel.addPaintable(p);
 
         map.trackObject(new Person(mapFeatures.getPersonLocation()));

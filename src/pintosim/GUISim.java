@@ -42,7 +42,9 @@ public class GUISim {
         final PathFinder pathFinder = new DijkstraPathFinder(map);
 
         final int tileSize = graphicsPackage.getTileSize();
-        final int ANIMATION_DURATION = Integer.parseInt(props.getProperty("GameUpdateFrequencyMS"));
+        final int ANIMATION_DURATION = Integer.parseInt(
+            props.getProperty("GameUpdateFrequencyMS")
+        );
         final int GAME_UPDATE_FREQUENCY_MS = ANIMATION_DURATION;
 
         final AnimPanel animPanel = new AnimPanel(
@@ -86,13 +88,15 @@ public class GUISim {
             map.trackObject(pinto);
             pintoManager.addPinto(pinto);
             Point initialLocation = graphicsPackage.translateCoords(pintoLocation);
-            //MovingSprite sprite = new MovingSprite(graphicsPackage.getPintoImage(), initialLocation, 10);
-            Sprite sprite = new Sprite(graphicsPackage.getPintoImage(), initialLocation, 10);
-            MovementDecorator sprite1 = new MovementDecorator(sprite);
-            pinto.addLocationChangeListener(new TCreator(
-                    ANIMATION_DURATION, tileSize, sprite1, tween));
-            animPanel.addPaintable(sprite1);
-
+            MovementDecorator sprite = new MovementDecorator(
+                new Sprite(graphicsPackage.getPintoImage()
+              , initialLocation
+              , 10
+            ));
+            pinto.addLocationChangeListener(
+                new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween)
+            );
+            animPanel.addPaintable(new OrbitalDecorator(sprite, 2, 84));
         }
 
 
@@ -119,8 +123,12 @@ public class GUISim {
             Item item = new Item(name, itemLocation.x, itemLocation.y);
             map.trackItem(item);
             Point initialLocation = graphicsPackage.translateCoords(itemLocation);
-            MovingSprite sprite = new MovingSprite(img, initialLocation, 5);
-            item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
+            MovementDecorator sprite = new MovementDecorator(
+                new Sprite(img, initialLocation, 5)
+            );
+            item.addLocationChangeListener(
+                new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween)
+            );
             animPanel.addPaintable(sprite);
         }
         
@@ -128,9 +136,17 @@ public class GUISim {
         //we add the listener after we manually add items otherwise they get added twice
         map.addItemTrackedListener(new ItemTrackedListener() {
             public void itemAdded(Item item) {
-                Point initialLocation = graphicsPackage.translateCoords(new Point(item.getX(), item.getY()));
-                MovingSprite sprite = new MovingSprite(graphicsPackage.getItemImage(), initialLocation, 5);
-                item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
+                Point initialLocation = graphicsPackage.translateCoords(
+                    new Point(item.getX(), item.getY())
+                );
+                MovementDecorator sprite = new MovementDecorator(
+                    new Sprite(graphicsPackage.getItemImage()
+                  , initialLocation
+                  , 5
+                ));
+                item.addLocationChangeListener(
+                    new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween)
+                );
                 animPanel.addPaintable(sprite);
             }
         });
@@ -138,15 +154,25 @@ public class GUISim {
         
         
 
-        Point initialLocation = graphicsPackage.translateCoords(mapFeatures.getPintoDockingStationLocation());
-        animPanel.addPaintable(new Sprite(graphicsPackage.getDockingImage(),
-                initialLocation, 5));
-        initialLocation = graphicsPackage.translateCoords(mapFeatures.getPersonLocation());
+        Point initialLocation = graphicsPackage.translateCoords(
+            mapFeatures.getPintoDockingStationLocation()
+        );
+        animPanel.addPaintable(
+            new Sprite(graphicsPackage.getDockingImage()
+          , initialLocation
+          , 5)
+        );
+        initialLocation = graphicsPackage.translateCoords(
+            mapFeatures.getPersonLocation()
+        );
         Paintable p = null;
-        Sprite personSprite = new Sprite(graphicsPackage.getPersonImage(),
-                initialLocation, 5);
+        Sprite personSprite = new Sprite(
+            graphicsPackage.getPersonImage()
+          , initialLocation
+          , 5
+        );
         p = personSprite;
-        p = new OrbitalDecorator(personSprite, 5, 200);
+        p = new OrbitalDecorator(personSprite, 3, 100);
         animPanel.addPaintable(p);
 
         map.trackObject(new Person(mapFeatures.getPersonLocation()));

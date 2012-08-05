@@ -67,13 +67,6 @@ public class AnimPanel extends Canvas {
 
                 for (Paintable paintable : paintables) {
                     paintable.paint(g);
-                    if (paintable instanceof MovingSprite ) {
-                        MovingSprite ms = (MovingSprite) paintable;
-                        int size = ms.transitionHistoryForDebugging.size();
-                        if (size > 2) {
-                            if (size < 0) {System.out.println("");}
-                        }
-                    }
                 }
 
                 g.dispose();

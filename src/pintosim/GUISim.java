@@ -72,7 +72,11 @@ public class GUISim {
         }
 
 
-        final Tween tween = new TweenFactory().create(TweenFactory.Algorithm.Quadratic, TweenFactory.Action.InOut);
+        final Tween tween = new TweenFactory().create(
+            props.getProperty("TweeningAlgorithm")
+          , props.getProperty("TweeningAlgorithmAction")
+        );
+        
         // this listener gets called when we add a new item to the enviornmentMap.
 
 

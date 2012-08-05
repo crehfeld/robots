@@ -5,23 +5,23 @@ import java.awt.Point;
 
 
 
-public class TransitionCreator implements LocationChangeListener {
+public class TCreator implements LocationChangeListener {
     protected int animationDuration;
     protected int tileSize;
-    protected MovingSprite sprite;
+    protected MovementDecorator movementDecorator;
     protected Tween tweeningStrategy;
     
-    public TransitionCreator(int animationDuration, int tileSize, MovingSprite sprite, Tween tween) {
+    public TCreator(int animationDuration, int tileSize, MovementDecorator movementDecorator, Tween tween) {
         this.animationDuration = animationDuration;
         this.tileSize = tileSize;
-        this.sprite = sprite;
+        this.movementDecorator = movementDecorator;
         tweeningStrategy = tween;
     }
     
     public void updateLocation(MovableObject obj, Point from, Point to) {
         Point easeFrom = new Point(from.x * tileSize, from.y * tileSize);
         Point easeTo = new Point(to.x * tileSize, to.y * tileSize);
-        sprite.addTransition(new TimeBasedTransition(easeFrom, easeTo, animationDuration, tweeningStrategy));
+        movementDecorator.addTransition(new TimeBasedTransition(easeFrom, easeTo, animationDuration, tweeningStrategy));
     }
 
 }

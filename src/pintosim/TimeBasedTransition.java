@@ -40,4 +40,15 @@ public class TimeBasedTransition implements Transition {
         int y = (int) tweenStrategy.tween(elapsed, from.y, delta.y, duration);
         return new Point(x, y);
     }
+    
+    public Point getDeltaLocation() {
+        return new Point(delta);
+    }
+    
+    public Point getCurrentDeltaLocation() {
+        Point p = getCurrentLocation();
+        p.translate(-from.x, -from.y);
+        return p;
+    }
+    
 }

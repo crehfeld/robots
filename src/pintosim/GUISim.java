@@ -29,11 +29,6 @@ public class GUISim {
         }
 	}
     
-    
-    
-    
-    
-	
 	public static void showGUIInterface(Properties props) throws Exception {
         final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
         final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
@@ -52,8 +47,6 @@ public class GUISim {
         );
 
         animPanel.addPaintable(new FramesPerSecond());
-
-
 
         // create sprites for the walls and floor
         // we will every single space with either a wall or floor graphic
@@ -86,13 +79,14 @@ public class GUISim {
             map.trackObject(pinto);
             pintoManager.addPinto(pinto);
             Point initialLocation = graphicsPackage.translateCoords(pintoLocation);
-            MovingSprite sprite = new MovingSprite(graphicsPackage.getPintoImage(), initialLocation, 10);
-            pinto.addLocationChangeListener(new TransitionCreator(
-                    ANIMATION_DURATION, tileSize, sprite, tween));
-            animPanel.addPaintable(sprite);
+            //MovingSprite sprite = new MovingSprite(graphicsPackage.getPintoImage(), initialLocation, 10);
+            Sprite sprite = new Sprite(graphicsPackage.getPintoImage(), initialLocation, 10);
+            MovementDecorator sprite1 = new MovementDecorator(sprite);
+            pinto.addLocationChangeListener(new TCreator(
+                    ANIMATION_DURATION, tileSize, sprite1, tween));
+            animPanel.addPaintable(sprite1);
 
         }
-
 
         // add items.
         // the image map defines how many items exist at the start(and the item locations)
@@ -132,16 +126,17 @@ public class GUISim {
                 animPanel.addPaintable(sprite);
             }
         });
-        
-        
-        
 
         Point initialLocation = graphicsPackage.translateCoords(mapFeatures.getPintoDockingStationLocation());
         animPanel.addPaintable(new Sprite(graphicsPackage.getDockingImage(),
                 initialLocation, 5));
         initialLocation = graphicsPackage.translateCoords(mapFeatures.getPersonLocation());
-        animPanel.addPaintable(new Sprite(graphicsPackage.getPersonImage(),
-                initialLocation, 5));
+        Paintable p = null;
+        Sprite personSprite = new Sprite(graphicsPackage.getPersonImage(),
+                initialLocation, 5);
+        p = personSprite;
+        p = new OrbitalDecorator(personSprite, 5, 200);
+        animPanel.addPaintable(p);
 
         map.trackObject(new Person(mapFeatures.getPersonLocation()));
 

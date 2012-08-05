@@ -13,13 +13,13 @@ public class DijkstraPathFinder implements PathFinder {
     private Vertex[][] vertices;
     private static final int UNOBSTRUCTED_EDGE_WEIGHT  = 5;
     private static final int   OBSTRUCTED_EDGE_WEIGHT  = 8000;
-    private EnvironmentMap environmentMap;
+    private EnviornmentMap environmentMap;
     
     private boolean[][] freeSpaces;//true means unobstructed
     
     private boolean sourcePathComputed = false;
     
-    public DijkstraPathFinder(EnvironmentMap environmentMap) {
+    public DijkstraPathFinder(EnviornmentMap environmentMap) {
         this.environmentMap = environmentMap;
     }
     

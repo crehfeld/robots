@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.List;
 import java.util.ArrayList;
 
-public abstract class MovableObject {
+public abstract class MovableObject implements LocationChangeListenable {
     protected final Point initialLocation;
     protected Point currentLocation;
     private List<LocationChangeListener> listeners = new ArrayList<LocationChangeListener>();
@@ -43,7 +43,7 @@ public abstract class MovableObject {
         }
     }
     
-    public void addLocationChangeListeners(LocationChangeListener listener) {
+    public void addLocationChangeListener(LocationChangeListener listener) {
         listeners.add(listener);
     }
 }

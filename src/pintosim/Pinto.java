@@ -24,7 +24,7 @@ public class Pinto extends MovableObject {
     private List<Point> currentPath;
     private PathFinder pathFinder;
     private Item itemBeingCarried;
-    private EnvironmentMap EnvironmentMap;
+    private EnviornmentMap EnvironmentMap;
     
     
     
@@ -37,7 +37,7 @@ public class Pinto extends MovableObject {
     
     private PintoState state = PintoState.IDLE;
 
-    public Pinto(Point initialLocation, EnvironmentMap map, PintoManager pintoManager, PathFinder pathFinder) {
+    public Pinto(Point initialLocation, EnviornmentMap map, PintoManager pintoManager, PathFinder pathFinder) {
         super(initialLocation);
         EnvironmentMap = map;
         this.pintoManager = pintoManager;

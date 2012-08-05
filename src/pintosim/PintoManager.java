@@ -31,13 +31,13 @@ public class PintoManager {
     }
     
     private List<Pinto> pintos = new ArrayList<Pinto>();
-    private EnvironmentMap map;
+    private EnviornmentMap map;
     private Queue<Task> queuedTasks = new ConcurrentLinkedQueue<Task>();
     private List<Task> runningTasks = new CopyOnWriteArrayList<Task>();
     private List<Task> completedTasks = new CopyOnWriteArrayList<Task>();
 
 
-    public PintoManager(EnvironmentMap map) {
+    public PintoManager(EnviornmentMap map) {
         this.map = map;
     }
     

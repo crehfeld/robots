@@ -50,7 +50,7 @@ public class PintoSim {
     public static UserInterface build(Properties props) throws Exception {
         final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
         final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
-        final EnvironmentMap map = new EnvironmentMap(mapFeatures);
+        final EnviornmentMap map = new EnviornmentMap(mapFeatures);
         final PintoManager pintoManager = new PintoManager(map);
         final PathFinder pathFinder = new DijkstraPathFinder(map);
 
@@ -103,7 +103,7 @@ public class PintoSim {
     
 
 
-    private static void renderMapToFile(final EnvironmentMap map, String filename) {
+    private static void renderMapToFile(final EnviornmentMap map, String filename) {
         RandomAccessFile tmp = null;
         try {
             tmp = new RandomAccessFile(filename, "rw");

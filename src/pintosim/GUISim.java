@@ -37,7 +37,7 @@ public class GUISim {
 	public static void showGUIInterface(Properties props) throws Exception {
         final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
         final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
-        final EnvironmentMap map = new EnvironmentMap(mapFeatures);
+        final EnviornmentMap map = new EnviornmentMap(mapFeatures);
         final PintoManager pintoManager = new PintoManager(map);
         final PathFinder pathFinder = new DijkstraPathFinder(map);
 
@@ -83,7 +83,7 @@ public class GUISim {
             pintoManager.addPinto(pinto);
             Point initialLocation = graphicsPackage.translateCoords(pintoLocation);
             MovingSprite sprite = new MovingSprite(graphicsPackage.getPintoImage(), initialLocation, 10);
-            pinto.addLocationChangeListeners(new TransitionCreator(
+            pinto.addLocationChangeListener(new TransitionCreator(
                     ANIMATION_DURATION, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
 
@@ -114,7 +114,7 @@ public class GUISim {
             map.trackItem(item);
             Point initialLocation = graphicsPackage.translateCoords(itemLocation);
             MovingSprite sprite = new MovingSprite(img, initialLocation, 5);
-            item.addLocationChangeListeners(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
+            item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
         }
         
@@ -124,7 +124,7 @@ public class GUISim {
             public void itemAdded(Item item) {
                 Point initialLocation = graphicsPackage.translateCoords(new Point(item.getX(), item.getY()));
                 MovingSprite sprite = new MovingSprite(graphicsPackage.getItemImage(), initialLocation, 5);
-                item.addLocationChangeListeners(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
+                item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
                 animPanel.addPaintable(sprite);
             }
         });

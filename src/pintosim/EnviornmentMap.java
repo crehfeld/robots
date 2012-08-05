@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Chris
  */
-public class EnvironmentMap implements LocationChangeListener {
+public class EnviornmentMap implements LocationChangeListener {
 
     private class MovableObjectList extends ArrayList<MovableObject> {}
     
@@ -40,7 +40,7 @@ public class EnvironmentMap implements LocationChangeListener {
     // tracked items indexed by their name
     private Map<String, Item> trackedItems = new HashMap<String, Item>();
 
-    public EnvironmentMap(MapFeatures mapFeatures) {
+    public EnviornmentMap(MapFeatures mapFeatures) {
         this.mapFeatures = mapFeatures;
         width = mapFeatures.getWidth();
         height = mapFeatures.getHeight();
@@ -153,7 +153,7 @@ public class EnvironmentMap implements LocationChangeListener {
         if (!trackedObjects.containsKey(obj)) {
             trackedObjects.put(obj, new Point(obj.getX(), obj.getY()));
             tileOccupiers[obj.getX()][obj.getY()].add(obj);
-            obj.addLocationChangeListeners(this);
+            obj.addLocationChangeListener(this);
         }
     }
 
@@ -161,7 +161,7 @@ public class EnvironmentMap implements LocationChangeListener {
         String name = item.getName().toLowerCase();
         if (!trackedItems.containsKey(name)) {
             trackedItems.put(name, item);
-            item.addLocationChangeListeners(this);
+            item.addLocationChangeListener(this);
             notifyItemTrackedListeners(item);
         }
     }

@@ -7,26 +7,20 @@ import java.awt.Point;
 import java.util.LinkedList;
 
 
-public class MovementDecorator implements Paintable {
+public class MovementDecorator extends AbstractPaintableDecorator {
     private LinkedList<Transition> transitions = new LinkedList<Transition>();
     private Transition currentTransition;
     private Point totalMovementDelta = new Point(0, 0);
     
-    public LinkedList<Transition> transitionHistoryForDebugging = new LinkedList<Transition>();
-    
-    private Paintable paintable;
-    
     public MovementDecorator(Paintable paintable) {
-        this.paintable = paintable;
+        super(paintable);
     }
     
-
     public synchronized void addTransition(Transition transition) {
         transitions.add(transition);
     }
 
-    
-    protected Point getCurrentLocation() {
+    protected Point getRelativeOffset() {
         fastForwardToCurrentTransition();
         //we may not have any transitions yet, so return the starting location
         Point currentLoc = new Point(totalMovementDelta);
@@ -50,7 +44,6 @@ public class MovementDecorator implements Paintable {
                 return;
             } else {
                 currentTransition = transitions.poll();
-                transitionHistoryForDebugging.add(currentTransition);
             }
         }
         
@@ -58,18 +51,6 @@ public class MovementDecorator implements Paintable {
             Point delta = currentTransition.getDeltaLocation();
             totalMovementDelta.translate(delta.x, delta.y);
             currentTransition = transitions.poll();
-            transitionHistoryForDebugging.add(currentTransition);
         }
-    }
-    
-    public int zIndex() {
-        return paintable.zIndex();
-    }
-    
-    public synchronized void paint(Graphics g) {
-        Point p = getCurrentLocation();
-        g.translate(p.x, p.y);
-        paintable.paint(g);
-        g.translate(-p.x, -p.y);
     }
 }

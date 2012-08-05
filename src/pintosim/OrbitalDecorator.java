@@ -2,30 +2,26 @@
 package pintosim;
 
 import java.awt.Graphics;
+import java.awt.Point;
 
 
-public class OrbitalDecorator implements Paintable {
-    private Paintable paintable;
+public class OrbitalDecorator extends AbstractPaintableDecorator {
     private int radius;
     private long startTime;
     private double frequency;
+    
     public OrbitalDecorator(Paintable paintable, int radius, double frequency) {
-        this.paintable = paintable;
+        super(paintable);
         startTime = System.currentTimeMillis();
         this.radius = radius;
         this.frequency = frequency;
     }
-    
-    public void paint(Graphics g) {
-        int xShift = (int) Math.round(radius * Math.cos(elapsedTime() / frequency));
-        int yShift = (int) Math.round(radius * Math.sin(elapsedTime() / frequency));
-        g.translate(xShift, yShift);
-        paintable.paint(g);
-        g.translate(-xShift, -yShift);
-    }
 
-    public int zIndex() {
-        return paintable.zIndex();
+    protected Point getRelativeOffset() {
+        return new Point(
+            (int) Math.round(radius * Math.cos(elapsedTime() / frequency))
+          , (int) Math.round(radius * Math.sin(elapsedTime() / frequency))
+        );
     }
     
     private long elapsedTime() {

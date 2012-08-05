@@ -72,7 +72,7 @@ public class GUISim {
         }
 
 
-        final Tween tween = new TweenFactory().create(
+        final Tween tween = new BasicTweenFactory().create(
             props.getProperty("TweeningAlgorithm")
           , props.getProperty("TweeningAlgorithmAction")
         );

@@ -1,0 +1,64 @@
+PintoSim GUI Instructions. 
+
+The GUI version of PintoSim is very easy to run and understand compared to 
+the command line version. 
+
+To run the GUI, you have to simply run the GUISim java file located in
+src/pintosim/GUISim.java and you will be shown the PintoSim GUI.  
+
+In the GUI, we give users a choice. They can either input the item names to
+fetch or add via the input boxes or then can also click the map depending on
+what they want.
+
+The GUI also has a status message space that updates itself when different
+actions take place. For example, if the user requests an item to be fetched, the
+status message will update itself to the relavant message. 
+
+Let's look at the different things you can do with the GUI version of PintoSim. 
+
+-- To Add an Item --
+
+To add an item to the map, you can input the x and y coordinates of where you
+want the item to be added and the name of the item. When you are done, you can
+press the enter key after inputting the name or click the "Add item" button.
+
+Alternatively, you can also Shift-click the map where you want the item to be
+added and the coordinates will be automatically entered in the text fields.
+Simply input a name for the item and press enter or click the "Add item" button.
+
+-- To Get an Item --
+
+To fetch an item, the simplest way to do this is to just click on an item you
+want to fetch and a Pinto will be dispatched. 
+
+Alternatively, you can enter the name of the item in the Get Item panel and
+press enter or click the "Get Item" button. 
+
+-- To Get the Status of an Item--
+
+To get the status of an item, you can simply alt-click or option-click the item. 
+
+Alternatively, especially when the Pinto already has the item, you can input the
+name of the item in the Get Status panel and then click the "get status of item"
+button. 
+
+-- To Cancel an Item -- 
+
+To cancel an item, you can simply shift-click the item or input the name of the
+item you want to cancel by typing in the name in the Cancel Item panel and then
+clicking the "cancel item" button. 
+
+If the pinto is already holding the item, and you cancel the item, a confirm
+dialog will popup and the Pinto will wait for you to confirm if you want the
+item to be dropped on the ground or not. If you confirm this message, the item
+will be dropped on the ground and the status will be cancelled. If not, the
+Pinto will continue delivering the item to you. 
+
+-- Help Desk --
+
+The user can also call help desk by inputting a query in the help desk text
+area. The text area will complain if there are no query entered or if the user
+enters less than 3 letters. The text area is built in with scroll bars and a
+word wrap so the user does not have to scroll horizontally. When the user is
+done inputting a query, they can simply press enter or press the "send query to
+help desk" button. 

@@ -24,8 +24,7 @@ public abstract class MovableObject implements LocationChangeListenable {
     public void move(int x, int y) {
         Point newLocation = new Point(x, y);
         Point oldLocation = new Point(currentLocation);
-        currentLocation.x = x;
-        currentLocation.y = y;
+        currentLocation   = new Point(newLocation);
         notifyLocationChangeListeners(oldLocation, newLocation);
     }
     
@@ -45,5 +44,9 @@ public abstract class MovableObject implements LocationChangeListenable {
     
     public void addLocationChangeListener(LocationChangeListener listener) {
         listeners.add(listener);
+    }
+    
+    public void removeLocationChangeListener(LocationChangeListener listener) {
+        listeners.remove(listener);
     }
 }

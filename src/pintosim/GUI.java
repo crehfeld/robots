@@ -250,13 +250,14 @@ public class GUI implements ActionListener {
         final JTextArea helpArea = new JTextArea("");
         JScrollPane helpScrollPane = new JScrollPane(
                 helpArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
         );
 
         helpArea.setWrapStyleWord(true);
+        helpArea.setLineWrap(true);
         helpArea.setEditable(true);
-        helpScrollPane.setPreferredSize(new Dimension(220, 65));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
+        helpScrollPane.setPreferredSize(new Dimension(220, 65));
 
         // Help button
         JButton helpButton = new JButton("Send query to Help Desk");

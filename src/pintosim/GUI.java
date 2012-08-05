@@ -14,6 +14,9 @@ public class GUI implements ActionListener {
     // GUI objects
     private JFrame frame = new JFrame("PintoSim");
     private JLabel statusOfCommand = new JLabel("");
+    private JTextField xLoc = new JTextField("", 3);
+    private JTextField yLoc = new JTextField("", 3);
+    private JTextField itemName = new JTextField("", 8);
 
     // Backend objects
     private EnviornmentMap map;
@@ -22,10 +25,7 @@ public class GUI implements ActionListener {
     // Item on the map
     private int x;
     private int y;
-    
-    private JTextField xLoc = new JTextField("", 3);
-    private JTextField yLoc = new JTextField("", 3);
-    private JTextField itemName = new JTextField("", 8);
+
     /**
      * Constructs a GUI object.
      * @param pintoManager manages pintos
@@ -62,7 +62,6 @@ public class GUI implements ActionListener {
         JLabel yLabel = new JLabel("Y: ");
 
         JLabel itemLabel = new JLabel("Name: ");
-
 
         itemName.addActionListener(new ActionListener() {
             @Override
@@ -229,7 +228,10 @@ public class GUI implements ActionListener {
                 if (cancelNameField.getText().equals("")) {
                     statusOfCommand.setText("No name entered!");
                 } else {
-                    performCancelGetItem(new Command(Command.Type.CANCEL_GET_ITEM, cancelNameField.getText()));
+                    performCancelGetItem(
+                            new Command(Command.Type.CANCEL_GET_ITEM,
+                                    cancelNameField.getText()
+                            ));
                     cancelNameField.setText("");
                 }
             }
@@ -239,13 +241,17 @@ public class GUI implements ActionListener {
         JPanel helpPanel = new JPanel(new FlowLayout());
         helpPanel.setBorder(BorderFactory.createTitledBorder(" Call Help Desk "));
         helpPanel.setPreferredSize(new Dimension(250, 130));
+
+        // Help area to enter the query
         final JTextArea helpArea = new JTextArea("");
-        helpArea.setBorder(BorderFactory.createTitledBorder(""));
-        final JScrollPane helpScrollPane = new JScrollPane(helpArea);
-        helpScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        helpScrollPane.setPreferredSize(new Dimension(50, 30));
+        JScrollPane helpScrollPane = new JScrollPane(
+                helpArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
+
+        helpArea.setWrapStyleWord(true);
         helpArea.setEditable(true);
-        helpArea.setPreferredSize(new Dimension(220, 60));
+        helpScrollPane.setPreferredSize(new Dimension(220, 60));
         helpArea.setCaretPosition(helpArea.getDocument().getLength());
 
         // Help button
@@ -295,7 +301,8 @@ public class GUI implements ActionListener {
         cancelPanel.add(cancelNameField);
         cancelPanel.add(cancelButton);
         cancelPanel.add(cancelHint);
-        helpPanel.add(helpArea);
+        //helpPanel.add(helpArea);
+        helpPanel.add(helpScrollPane);
         helpPanel.add(helpButton);
         commands.add(locationPanel);
         commands.add(getPanel);
@@ -303,7 +310,6 @@ public class GUI implements ActionListener {
         commands.add(cancelPanel);
         commands.add(helpPanel);
         commands.add(commandStatus);
-        content.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.PAGE_END);
         content.add(commands);
         content.add(mapPanel);
         frame.add(content);
@@ -432,6 +438,10 @@ public class GUI implements ActionListener {
         pintoManager.addCommand(cmd);
     }
 
+    /**
+     * Gets the status of an item.
+     * @param cmd the getStatus command
+     */
     private void performGetItemStatus(Command cmd) {
         Item item = map.getItemByName(cmd.getItemName());
         if (item == null) {
@@ -573,7 +583,6 @@ public class GUI implements ActionListener {
                     return;
                 }
                 
-                
                 for (Item item : map.getItemsAt(x, y)) {
                     if (evt.isShiftDown()) {
                         //cancel item
@@ -599,6 +608,4 @@ public class GUI implements ActionListener {
             }
         });
     }
-    
-    
 }

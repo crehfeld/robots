@@ -11,10 +11,10 @@ public class GUISim {
     
     //lol a unicode fail whale...
     private static final String failureMessage = "failure initializing\n\n"
-                              + "▄██████████████▄▐█▄▄▄▄█▌\n"
-                              + "██████▌▄▌▄▐▐▌███▌▀▀██▀▀\n"
-                              + "████▄█▌▄▌▄▐▐▌▀███▄▄█▌\n"
-                              + "▄▄▄▄▄██████████████▀\n";
+                              + "_¦¦¦¦¦¦¦¦¦¦¦¦¦¦_¦¦____¦¦\n"
+                              + "¦¦¦¦¦¦¦_¦_¦¦¦¦¦¦¦¯¯¦¦¯¯\n"
+                              + "¦¦¦¦_¦¦_¦_¦¦¦¯¦¦¦__¦¦\n"
+                              + "_____¦¦¦¦¦¦¦¦¦¦¦¦¦¦¯\n";
     
     
 	public static void main(String[] args) {
@@ -28,11 +28,12 @@ public class GUISim {
             e.printStackTrace();
         }
 	}
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 48e2453b6f4d4f5648cda566487431051659f6c1
+    
+    
+    
+    
+	
 	public static void showGUIInterface(Properties props) throws Exception {
         final GraphicsPackage graphicsPackage = new PropertiesBasedGraphicsPackage(props);
         final MapFeatures mapFeatures = new ImageMapAnalyzer(graphicsPackage.getMapImage());
@@ -51,6 +52,8 @@ public class GUISim {
         );
 
         animPanel.addPaintable(new FramesPerSecond());
+
+
 
         // create sprites for the walls and floor
         // we will every single space with either a wall or floor graphic
@@ -92,6 +95,7 @@ public class GUISim {
 
         }
 
+
         // add items.
         // the image map defines how many items exist at the start(and the item locations)
         // we try to use named items which have specific graphics to fill up the slots. 
@@ -119,6 +123,7 @@ public class GUISim {
             item.addLocationChangeListener(new TransitionCreator(ANIMATION_DURATION, tileSize, sprite, tween));
             animPanel.addPaintable(sprite);
         }
+        
 
         //we add the listener after we manually add items otherwise they get added twice
         map.addItemTrackedListener(new ItemTrackedListener() {
@@ -129,6 +134,9 @@ public class GUISim {
                 animPanel.addPaintable(sprite);
             }
         });
+        
+        
+        
 
         Point initialLocation = graphicsPackage.translateCoords(mapFeatures.getPintoDockingStationLocation());
         animPanel.addPaintable(new Sprite(graphicsPackage.getDockingImage(),

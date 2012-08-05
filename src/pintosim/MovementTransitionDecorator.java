@@ -7,12 +7,12 @@ import java.awt.Point;
 import java.util.LinkedList;
 
 
-public class MovementDecorator extends AbstractPaintableDecorator {
+public class MovementTransitionDecorator extends AbstractPaintableDecorator {
     private LinkedList<Transition> transitions = new LinkedList<Transition>();
     private Transition currentTransition;
     private Point totalMovementDelta = new Point(0, 0);
     
-    public MovementDecorator(Paintable paintable) {
+    public MovementTransitionDecorator(Paintable paintable) {
         super(paintable);
     }
     

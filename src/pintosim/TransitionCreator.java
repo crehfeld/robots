@@ -8,10 +8,10 @@ import java.awt.Point;
 public class TransitionCreator implements LocationChangeListener {
     protected int animationDuration;
     protected int tileSize;
-    protected MovementDecorator movementDecorator;
+    protected MovementTransitionDecorator movementDecorator;
     protected Tween tweeningStrategy;
     
-    public TransitionCreator(int animationDuration, int tileSize, MovementDecorator movementDecorator, Tween tween) {
+    public TransitionCreator(int animationDuration, int tileSize, MovementTransitionDecorator movementDecorator, Tween tween) {
         this.animationDuration = animationDuration;
         this.tileSize = tileSize;
         this.movementDecorator = movementDecorator;

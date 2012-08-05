@@ -88,7 +88,7 @@ public class GUISim {
             map.trackObject(pinto);
             pintoManager.addPinto(pinto);
             Point initialLocation = graphicsPackage.translateCoords(pintoLocation);
-            MovementDecorator sprite = new MovementDecorator(
+            MovementTransitionDecorator sprite = new MovementTransitionDecorator(
                 new Sprite(graphicsPackage.getPintoImage()
               , initialLocation
               , 10
@@ -123,7 +123,7 @@ public class GUISim {
             Item item = new Item(name, itemLocation.x, itemLocation.y);
             map.trackItem(item);
             Point initialLocation = graphicsPackage.translateCoords(itemLocation);
-            MovementDecorator sprite = new MovementDecorator(
+            MovementTransitionDecorator sprite = new MovementTransitionDecorator(
                 new Sprite(img, initialLocation, 5)
             );
             item.addLocationChangeListener(
@@ -139,7 +139,7 @@ public class GUISim {
                 Point initialLocation = graphicsPackage.translateCoords(
                     new Point(item.getX(), item.getY())
                 );
-                MovementDecorator sprite = new MovementDecorator(
+                MovementTransitionDecorator sprite = new MovementTransitionDecorator(
                     new Sprite(graphicsPackage.getItemImage()
                   , initialLocation
                   , 5

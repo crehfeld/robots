@@ -7,12 +7,12 @@ function build() {
     mkdir consolebuild/maps
     mkdir consolebuild/src
     for file in `echo "maps/"`; do
-        cp -r $file $dir1
+cp -r $file $dir1
     done
-    for file in `echo "src/pintosim/"`; do
-        cp -r $file $dir2
+for file in `echo "src/pintosim/"`; do
+cp -r $file $dir2
     done
-    javac -d consolebuild src/pintosim/*.java
+javac -d consolebuild src/pintosim/*.java
 }
 
 function run() {

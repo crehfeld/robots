@@ -1,6 +1,7 @@
 #!/bin/bash
 # builds the graphical user interface version of PintoSim
-# chmod + x and then source this file to run GUISim
+# Execute this file by running chmod +x and then sourcing this file from the
+# Terminal.
 dir1=guibuild/maps
 dir2=guibuild/src
 dir3=guibuild/graphics

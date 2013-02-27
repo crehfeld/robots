@@ -48,7 +48,7 @@ public class DijkstraPathFinder implements PathFinder {
         // set up edges with proper weights between vertices
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                vertices[x][y].adjacencies = makeEdgesForAllVerticesAdjacentTo(x, y);
+                vertices[x][y].setAdjacencies(makeEdgesForAllVerticesAdjacentTo(x, y));
             }
         }
     }
@@ -121,13 +121,13 @@ public class DijkstraPathFinder implements PathFinder {
     }
 
     private void markCollisionZoneAround(Vertex danger) {
-        for (Edge e : danger.adjacencies) {
+        for (Edge e : danger.getAdjacencies()) {
             e.weight = OBSTRUCTED_EDGE_WEIGHT;
         }
     }
 
     private void markClearZoneAround(Vertex clear) {
-        for (Edge e : clear.adjacencies) {
+        for (Edge e : clear.getAdjacencies()) {
             e.weight = UNOBSTRUCTED_EDGE_WEIGHT;
         }
     }
@@ -139,7 +139,7 @@ public class DijkstraPathFinder implements PathFinder {
         
         
         Vertex source = vertices[from.x][from.y];
-        source.minDistance = 0.;
+        source.setMinDistance(0.);
         PriorityQueue<Vertex> vertexQueue = new PriorityQueue<Vertex>();
         vertexQueue.add(source);
 
@@ -147,14 +147,14 @@ public class DijkstraPathFinder implements PathFinder {
             Vertex u = vertexQueue.poll();
 
             // Visit each edge exiting u
-            for (Edge e : u.adjacencies) {
+            for (Edge e : u.getAdjacencies()) {
                 Vertex v = e.target;
                 double weight = e.weight;
-                double distanceThroughU = u.minDistance + weight;
-                if (distanceThroughU < v.minDistance) {
+                double distanceThroughU = u.getMinDistance() + weight;
+                if (distanceThroughU < v.getMinDistance()) {
                     vertexQueue.remove(v);
-                    v.minDistance = distanceThroughU;
-                    v.previous = u;
+                    v.setMinDistance(distanceThroughU);
+                    v.setPrevious(u);
                     vertexQueue.add(v);
                 }
             }
@@ -182,7 +182,7 @@ public class DijkstraPathFinder implements PathFinder {
     public List<Point> getShortestPathTo(Point to) {
         Vertex target = vertices[to.x][to.y];
         List<Point> path = new ArrayList<Point>();
-        for (Vertex vertex = target; vertex != null; vertex = vertex.previous) {
+        for (Vertex vertex = target; vertex != null; vertex = vertex.getPrevious()) {
             path.add(new Point(vertex.getX(), vertex.getY()));
         }
         Collections.reverse(path);
